@@ -1,5 +1,12 @@
 #include <sodium.h>
 
+void printHex(unsigned char *a, int aSize){
+    for(int i = 0; i<aSize;i++){
+        printf("%02x",a[i]);
+    }
+    printf("\n");
+}
+
 int main(){
     if(sodium_init()<0){
         printf("Crypto libary 'libsodium' did not init correctly.\nPANIC!\n");
@@ -9,9 +16,5 @@ int main(){
     unsigned char mes[] = "123abc";
     crypto_hash_sha256(out,mes,6);
 
-    for(int i = 0;i<sizeof(out);i++){
-        printf("%02x",out[i]);
-    }
-    printf("\n");
-    
+    printHex(out, sizeof(out));    
 }
