@@ -1,20 +1,27 @@
 #include <sodium.h>
-
-void printHex(unsigned char *a, int aSize){
-    for(int i = 0; i<aSize;i++){
-        printf("%02x",a[i]);
-    }
-    printf("\n");
-}
+#include <stdio.h>
+#include "socket_manager.h"
+#include "util.h"
+#include "constants.h"
 
 int main(){
-    if(sodium_init()<0){
+    if(sodium_init() < 0){
         printf("Crypto libary 'libsodium' did not init correctly.\nPANIC!\n");
         return 2;
     }
-    unsigned char out[32];
-    unsigned char mes[] = "123abc";
-    crypto_hash_sha256(out,mes,6);
+    printf("setting up socket!\n");
+    const int socket = start_socket(SOCKET_PORT, SOCKET_PORT);
+    if(socket < 0){
+        printf("Socket failed to start!\n");
+        return 3;
+    }
 
-    printHex(out, sizeof(out));    
+    printf("Now listening on port %d.\n",SOCKET_PORT);
+    int s = accept_socket(socket);
+    if(s < 0){
+        printf("Socket faild to accept!\n");
+        return 4;
+    }
+
+
 }

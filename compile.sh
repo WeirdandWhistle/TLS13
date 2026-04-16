@@ -1,2 +1,2 @@
 #!/bin/sh
-gcc main.c -o main -l sodium
+gcc socket_manager.c util.c main.c -o main -l sodium
