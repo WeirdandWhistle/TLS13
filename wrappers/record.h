@@ -3,5 +3,6 @@
 #define  TLS_13_RECORD
 
 TLSPlaintext read_record(int socket);
+void free_record(TLSPlaintext record);
 
 #endif

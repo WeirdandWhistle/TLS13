@@ -23,3 +23,6 @@ TLSPlaintext read_record(int socket){
     record.fragment = buf;
     return record;
 }
+void free_record(TLSPlaintext record){
+    free(record.fragment);
+}
