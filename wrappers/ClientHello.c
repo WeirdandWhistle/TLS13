@@ -48,7 +48,13 @@ ClientHello parse_client_hello(unsigned char* data, int data_length){
 
     printf("start extension parsing. extension length %d\n",ch.extensions_length);
     // extension parsing
-    printf("dif: %td\n",iter-data);
+
+    // unsigned char* buf = malloc(ch.extensions_length);
+    // assert(buf!=NULL);
+
+    // memcpy(buf, iter, ch.extensions_length);
+
+    ch.extensions = parse_extensions(iter, ch.extensions_length);
 
     return ch;
 }
@@ -56,4 +62,5 @@ void free_client_hello(ClientHello ch){
     free(ch.legacy_session_id);
     free(ch.cipher_suites);
     free(ch.legacy_compression_methods);
+    free_extensions(ch.extensions);
 }
