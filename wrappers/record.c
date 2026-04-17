@@ -3,6 +3,7 @@
 TLSPlaintext read_record(int socket){
     TLSPlaintext record = {0};
     int rc = read(socket, &record.type, 1);
+    printf("1. rc=%d\n",rc);
     assert(rc==1);
     rc = read(socket, record.legacy_record_version, 2);
     assert(rc==2);

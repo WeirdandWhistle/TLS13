@@ -32,7 +32,7 @@
           unsigned char type; //ContentType
           unsigned char legacy_record_version[2];
           uint16_t length;
-          unsigned char* fragment;
+          void* fragment;
     } TLSPlaintext;
 
     typedef struct {

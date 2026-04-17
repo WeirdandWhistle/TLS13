@@ -1,11 +1,4 @@
-#include <sodium.h>
-#include <stdio.h>
-#include <netinet/in.h>
-#include <unistd.h>
-#include "socket_manager.h"
-#include "util.h"
-#include "constants.h"
-#include "tls13_types.h"
+#include "main.h"
 
 int main(){
     if(sodium_init() < 0){
@@ -26,9 +19,9 @@ int main(){
         return 4;
     }
 
-    unsigned char* buf = malloc(1001);
-    int buf_length = read(s, buf, 1000);
-    buf[buf_length] = 0;
-    printf("%s",buf);
+    TLSPlaintext record = read_record(s);
 
+    printf("First record type is %02x the protcol version is %02x%02x and the length is %d\n",record.type,record.legacy_record_version[0],record.legacy_record_version[1],record.length);
+
+    return 0;
 }

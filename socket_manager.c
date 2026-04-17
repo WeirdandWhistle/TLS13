@@ -1,7 +1,4 @@
-#include "socket_manager.h"
-#include <sys/socket.h>
-#include <netinet/in.h>
-#include <stdio.h>
+#include "main.h"
 
 int start_socket(int port, int backlog){
     int soc = socket(AF_INET, SOCK_STREAM, 0);
@@ -26,7 +23,7 @@ int start_socket(int port, int backlog){
 int accept_socket(int socket){
     struct sockaddr accept_addr;
 	socklen_t addrlen = sizeof(accept_addr);
-    
+
 	int acc = accept(socket, &accept_addr, &addrlen);
 	if(acc<0){
         printf("accept error!");

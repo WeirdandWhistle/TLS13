@@ -2,6 +2,6 @@
 #ifndef  TLS_13_RECORD
 #define  TLS_13_RECORD
 
-TLSPlainText read_record(int socket);
+TLSPlaintext read_record(int socket);
 
 #endif
