@@ -15,5 +15,7 @@
 #include "tls13_types.h"
 #include "wrappers/record.h"
 #include "wrappers/ClientHello.h"
+#include "wrappers/handshake.h"
+#include "wrappers/extensions.h"
 
 #endif

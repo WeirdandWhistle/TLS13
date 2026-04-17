@@ -3,5 +3,6 @@
 
     void print_hex(unsigned char *a, int aSize);
     uint32_t get_uint24(unsigned char* data);
+    void indent(int amount);
 
 #endif

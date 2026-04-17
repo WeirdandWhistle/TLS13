@@ -64,3 +64,18 @@ void free_client_hello(ClientHello ch){
     free(ch.legacy_compression_methods);
     free_extensions(ch.extensions);
 }
+void log_client_hello(ClientHello ch, int indent_level){
+    int id = indent_level;
+    indent(id); printf("ClientHello\n");
+    id++;
+    indent(id); printf("client_version=0x%02X%02X\n",ch.legacy_version[0],ch.legacy_version[1]);
+    indent(id); printf("Random:\n");
+    indent(id+1); print_hex(ch.random, 32);
+    indent(id); printf("session_id (len=%d):\n",ch.legacy_session_id_length);
+    indent(id+1); print_hex(ch.legacy_session_id, ch.legacy_session_id_length);
+    indent(id); printf("cipher_suites (len=%d):\n",ch.cipher_suites_length);
+    indent(id+1); print_hex(ch.cipher_suites, ch.cipher_suites_length);
+    indent(id); printf("compression_methods (len=%d):\n",ch.legacy_compression_methods_length);
+    indent(id+1); print_hex(ch.legacy_compression_methods, ch.legacy_compression_methods_length);
+    log_extensions(ch.extensions,id);
+}

@@ -30,7 +30,7 @@ int main(){
     printf("start ClientHello parsing\n");
     ClientHello ch = parse_client_hello(handshake.body, handshake.length);
 
-
+    log_client_hello(ch,1);
 
     free_client_hello(ch);
     free_handshake(handshake);

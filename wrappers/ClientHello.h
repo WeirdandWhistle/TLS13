@@ -4,5 +4,6 @@
 
     ClientHello parse_client_hello(unsigned char* data, int data_length);
     void free_client_hello(ClientHello ch);
+    void log_client_hello(ClientHello ch, int indent_level);
 
 #endif
