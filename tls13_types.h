@@ -42,6 +42,25 @@
     } Handshake;
 
     typedef struct {
+        uint16_t extension_type;
+        uint16_t extension_data_length;
+        unsigned char* extension_data; // <0..2^16-1>;
+    } Extension; //section 4.2
+
+    typedef struct {
+          unsigned char legacy_version[2];    /* = 0x0303 TLS v1.2 */
+          unsigned char random[32];
+          uint8_t legacy_session_id_length;
+          unsigned char* legacy_session_id; // <0..32>
+          uint16_t cipher_suites_length;
+          unsigned char* cipher_suites; // <2..2^16-2>
+          uint8_t legacy_compression_methods_length;
+          unsigned char* legacy_compression_methods; // <1..2^8-1>;
+          uint16_t extensions_length;
+          Extension* extensions; // <8..2^16-1>;
+      } ClientHello;
+
+    typedef struct {
         unsigned char level; //AlertLevel
         unsigned char description; //AlertDescription
     } Alert;

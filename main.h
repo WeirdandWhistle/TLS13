@@ -4,6 +4,8 @@
 #include <assert.h>
 #include <sodium.h>
 #include <stdio.h>
+#include <stddef.h>
+#include <string.h>
 #include <netinet/in.h>
 #include <unistd.h>
 #include <sys/socket.h>
@@ -12,5 +14,6 @@
 #include "constants.h"
 #include "tls13_types.h"
 #include "wrappers/record.h"
+#include "wrappers/ClientHello.h"
 
 #endif
