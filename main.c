@@ -23,5 +23,18 @@ int main(){
 
     printf("First record type is %02x the protcol version is %02x%02x and the length is %d\n",record.type,record.legacy_record_version[0],record.legacy_record_version[1],record.length);
 
+    
+
+    printf("start handshake parsing\n");
+    Handshake handshake = parse_handshake(record.fragment, record.length);
+    printf("start ClientHello parsing\n");
+    ClientHello ch = parse_client_hello(handshake.body, handshake.length);
+
+
+
+    free_client_hello(ch);
+    free_handshake(handshake);
+    free_record(record);
+
     return 0;
 }
