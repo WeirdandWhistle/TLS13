@@ -46,6 +46,11 @@
         uint16_t extension_data_length;
         unsigned char* extension_data; // <0..2^16-1>;
     } Extension; //section 4.2
+    //custom helper type
+    typedef struct {
+        uint8_t length;
+        Extension* array;
+    } ExtensionArray;
 
     typedef struct {
           unsigned char legacy_version[2];    /* = 0x0303 TLS v1.2 */
@@ -57,7 +62,7 @@
           uint8_t legacy_compression_methods_length;
           unsigned char* legacy_compression_methods; // <1..2^8-1>;
           uint16_t extensions_length;
-          Extension* extensions; // <8..2^16-1>;
+          ExtensionArray extensions; // <8..2^16-1>;
       } ClientHello;
 
     typedef struct {
