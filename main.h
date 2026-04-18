@@ -17,5 +17,6 @@
 #include "wrappers/ClientHello.h"
 #include "wrappers/handshake.h"
 #include "wrappers/extensions.h"
+#include "wrappers/ServerHello.h"
 
 #endif
