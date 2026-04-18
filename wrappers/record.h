@@ -4,5 +4,6 @@
 
 TLSPlaintext read_record(int socket);
 void free_record(TLSPlaintext record);
+Array process_record(TLSPlaintext record, Array body);
 
 #endif

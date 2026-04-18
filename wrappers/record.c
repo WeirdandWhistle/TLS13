@@ -26,3 +26,25 @@ TLSPlaintext read_record(int socket){
 void free_record(TLSPlaintext record){
     free(record.fragment);
 }
+Array process_record(TLSPlaintext record, Array body){
+    int length = 1 + 2 + 2 + record.length;
+    unsigned char* buf = malloc(length);
+    unsigned char* iter = buf;
+
+    *iter = record.type;
+    iter++;
+
+    memcpy(iter, record.legacy_record_version, 2);
+    iter += 2;
+
+    memcpy(iter, &record.length, 2);
+    iter += 2;
+
+    memcpy(iter, body.ptr, body.length);
+
+    Array arr = {0};
+    arr.length = length;
+    arr.ptr = buf;
+
+    return arr;
+}
