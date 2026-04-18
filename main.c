@@ -32,6 +32,11 @@ int main(){
 
     log_client_hello(ch,1);
 
+    unsigned char random_buf[32];
+    randombytes_buf(random_buf, sizeof(random_buf));
+
+    ServerHello sh = create_server_hello(random_buf, ch.legacy_session_id_length, ch.legacy_session_id,TLS_CHACHA20_POLY1305_SHA256,);
+
     free_client_hello(ch);
     free_handshake(handshake);
     free_record(record);
