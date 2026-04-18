@@ -26,3 +26,22 @@ Handshake parse_handshake(unsigned char* data, int data_length){
 void free_handshake(Handshake handshake){
     free(handshake.body);
 }
+Array process_handshake(Handshake handshake, Array body){
+    int length = 1 + 3 + handshake.length;
+
+    unsigned char* buf = malloc(length);
+    unsigned char* iter = buf;
+
+    *iter = handshake.msg_type;
+    iter++;
+
+    memcpy(iter, process_uint24(handshake.length), 3);
+    iter += 3;
+
+    memcpy(iter, body.ptr, body.length);
+
+    Array arr = {0};
+    arr.length = length;
+    arr.ptr = buf;
+    return arr;
+}

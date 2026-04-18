@@ -4,5 +4,6 @@
 
     Handshake parse_handshake(unsigned char* data, int data_length);
     void free_handshake(Handshake handshake);
+    Array process_handshake(Handshake handshake);
 
 #endif
