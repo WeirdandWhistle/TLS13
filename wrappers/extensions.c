@@ -45,6 +45,33 @@ void free_extensions(ExtensionArray ea){
     }
     free(ea.array);
 }
+/*Dont forget to free the ptr!*/
+Array process_extensions(ExtensionArray ea){
+    int length = 0;
+    for(int i = 0; i<ea.length;i++){
+        length+=4;
+        length+= ea.array[i].extension_data_length;
+    }
+
+    unsigned char* buf = malloc(length);
+    unsigned char* iter = buf;
+
+    for(int i = 0; i<ea.length;i++){
+        memcpy(iter, &ea.array[i].extension_type, 2);
+        iter += 2;
+
+        memcpy(iter, &ea.array[i].extension_data_length, 2);
+        iter += 2;
+
+        memcpy(iter, ea.array[i].extension_data, ea.array[i].extension_data_length);
+        iter += ea.array[i].extension_data_length;
+    }
+
+    Array arr = {0};
+    arr.length = length;
+    arr.ptr = buf;
+    return arr;
+}
 void log_extensions(ExtensionArray ea, int indent_level){
     int id = indent_level;
     indent(id); printf("extensions:\n");
