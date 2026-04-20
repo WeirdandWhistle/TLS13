@@ -5,6 +5,11 @@
     #define SOCKET_BACKLOG 5
     #define INDENT_PRODUCT 4
     #define INDENT_CHAR ' '
+
     #define TLS_CHACHA20_POLY1305_SHA256 {0x13, 0x03}
+    #define KEY_SHARE_EXTENSION_TYPE 51
+    #define NAMED_GROUP_X25519 0x001D
+    #define SERVER_HELLO_HEADER 2
+    #define HANDSHAKE_TYPE 22
 
 #endif
