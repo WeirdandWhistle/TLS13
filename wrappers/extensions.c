@@ -72,6 +72,43 @@ Array process_extensions(ExtensionArray ea){
     arr.ptr = buf;
     return arr;
 }
+int extensions_length(ExtensionArray ea){
+    int length = 0;
+    for(int i = 0; i<ea.length;i++){
+        length+=4;
+        length+= ea.array[i].extension_data_length;
+    }
+    return length;
+}
+ExtensionArray grow_extensions(ExtensionArray ea, int amount){
+    ea.length+=amount;
+    ea.array = realloc(ea.array, sizeof(Extension)*ea.length);
+    assert(ea.array!=NULL);
+}
+ExtensionArray add_key_share(ExtensionArray ea, uint16_t group, unsigned char* key_exchange, uint16_t key_exchange_length){
+    ea = grow_extensions(ea, 1);
+
+    uint16_t type = KEY_SHARE_EXTENSION_TYPE;
+    
+    int length = 2 + 2 + key_exchange_length;
+    unsigned char* buf = malloc(length);
+    assert(buf!=NULL);
+    unsigned char* iter = buf;
+
+    memcpy(iter, &group, 2);
+    iter += 2;
+
+    memcpy(iter, &key_exchange_length, 2);
+    iter += 2;
+
+    memcpy(iter, key_exchange, key_exchange_length);
+
+    ea.array[ea.length-1].extension_type = type;
+    ea.array[ea.length-1].extension_data_length = length;
+    ea.array[ea.length-1].extension_data = buf;
+
+    return ea;    
+}
 void log_extensions(ExtensionArray ea, int indent_level){
     int id = indent_level;
     indent(id); printf("extensions:\n");
