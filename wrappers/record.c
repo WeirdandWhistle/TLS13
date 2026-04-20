@@ -3,9 +3,11 @@
 TLSPlaintext read_record(int socket){
     TLSPlaintext record = {0};
     int rc = read(socket, &record.type, 1);
-    printf("1. rc=%d\n",rc);
     assert(rc==1);
+    record.legacy_record_version = malloc(2);
+    assert(record.legacy_record_version!=NULL);
     rc = read(socket, record.legacy_record_version, 2);
+    // printf("2. rc=%d; errno:%s\n",rc,strerror(errno));
     assert(rc==2);
     rc = read(socket, &record.length, 2);
     assert(rc==2);
@@ -26,7 +28,7 @@ TLSPlaintext read_record(int socket){
 void free_record(TLSPlaintext record){
     free(record.fragment);
 }
-Array process_record(TLSPlaintext record, Array body){
+Array process_record(TLSPlaintext record){
     int length = 1 + 2 + 2 + record.length;
     unsigned char* buf = malloc(length);
     unsigned char* iter = buf;
@@ -40,7 +42,7 @@ Array process_record(TLSPlaintext record, Array body){
     memcpy(iter, &record.length, 2);
     iter += 2;
 
-    memcpy(iter, body.ptr, body.length);
+    memcpy(iter, (unsigned char*)record.fragment, record.length);
 
     Array arr = {0};
     arr.length = length;
