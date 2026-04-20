@@ -26,7 +26,7 @@ Handshake parse_handshake(unsigned char* data, int data_length){
 void free_handshake(Handshake handshake){
     free(handshake.body);
 }
-Array process_handshake(Handshake handshake, Array body){
+Array process_handshake(Handshake handshake){
     int length = 1 + 3 + handshake.length;
 
     unsigned char* buf = malloc(length);
@@ -35,10 +35,12 @@ Array process_handshake(Handshake handshake, Array body){
     *iter = handshake.msg_type;
     iter++;
 
-    memcpy(iter, process_uint24(handshake.length), 3);
+    unsigned char* uint24_buf = process_uint24(handshake.length);
+    memcpy(iter, uint24_buf, 3);
     iter += 3;
+    free(uint24_buf);
 
-    memcpy(iter, body.ptr, body.length);
+    memcpy(iter, (unsigned char*)handshake.body, handshake.length);
 
     Array arr = {0};
     arr.length = length;
