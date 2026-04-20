@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdint.h>
+#include <stdlib.h>
 #include <netinet/in.h>
 #include "constants.h"
 
@@ -19,7 +20,7 @@ void indent(int amount){
     }
 }
 unsigned char* process_uint24(uint32_t num){
-    unsigned char buf[3];
+    unsigned char* buf = malloc(3);
     num = htons(num);
     buf[0] = (num >> 16) & 0xFF;
     buf[1] = (num >> 8) & 0xFF;
