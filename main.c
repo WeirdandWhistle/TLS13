@@ -19,6 +19,8 @@ int main(){
         return 4;
     }
 
+    unsigned char LEGACY_VERSION[2] = {0x03, 0x03};
+
     TLSPlaintext record = read_record(s);
 
     printf("First record type is %02x the protcol version is %02x%02x and the length is %d\n",record.type,record.legacy_record_version[0],record.legacy_record_version[1],record.length);
@@ -35,7 +37,37 @@ int main(){
     unsigned char random_buf[32];
     randombytes_buf(random_buf, sizeof(random_buf));
 
-    ServerHello sh = create_server_hello(random_buf, ch.legacy_session_id_length, ch.legacy_session_id,TLS_CHACHA20_POLY1305_SHA256,);
+    unsigned char cs[2] = TLS_CHACHA20_POLY1305_SHA256;
+
+    ExtensionArray ea = {0};
+    ea.length = 0;
+
+    ea = add_key_share(ea, NAMED_GROUP_X25519, random_buf, 32);
+
+    ServerHello sh = create_server_hello(random_buf, ch.legacy_session_id_length, ch.legacy_session_id,cs,extensions_length(ea),ea);
+
+    Array sh_arr = process_server_hello(sh);
+
+    Handshake send_hs = {0};
+    send_hs.length = sh_arr.length;
+    send_hs.body = sh_arr.ptr;
+    send_hs.msg_type = SERVER_HELLO_HEADER;
+
+    Array hs_arr = process_handshake(send_hs);
+
+    TLSPlaintext r = {0};
+    r.legacy_record_version = LEGACY_VERSION;
+    r.type = HANDSHAKE_TYPE;
+    r.length = hs_arr.length;
+    r.fragment = hs_arr.ptr;
+
+    Array r_arr = process_record(r);
+
+    write(s, r_arr.ptr, r_arr.length);
+
+    free(sh_arr.ptr);
+    free(hs_arr.ptr);
+    free(r_arr.ptr);
 
     free_client_hello(ch);
     free_handshake(handshake);
