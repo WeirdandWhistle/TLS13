@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdint.h>
 #include <stdlib.h>
+#include <string.h>
 #include <netinet/in.h>
 #include "constants.h"
 
@@ -26,4 +27,8 @@ unsigned char* process_uint24(uint32_t num){
     buf[1] = (num >> 8) & 0xFF;
     buf[2] = (num) & 0xFF;
     return buf;
+}
+void write_uint16(unsigned char* p, uint16_t num){
+    uint16_t a = htons(num);
+    memcpy(p, &a, 2);
 }

@@ -5,5 +5,6 @@
     uint32_t get_uint24(unsigned char* data);
     unsigned char* process_uint24(uint32_t num);
     void indent(int amount);
+    void write_uint16(unsigned char* p, uint16_t num);
 
 #endif

@@ -57,10 +57,10 @@ Array process_extensions(ExtensionArray ea){
     unsigned char* iter = buf;
 
     for(int i = 0; i<ea.length;i++){
-        memcpy(iter, &ea.array[i].extension_type, 2);
+        write_uint16(iter, ea.array[i].extension_type);
         iter += 2;
 
-        memcpy(iter, &ea.array[i].extension_data_length, 2);
+        write_uint16(iter, ea.array[i].extension_data_length);
         iter += 2;
 
         memcpy(iter, ea.array[i].extension_data, ea.array[i].extension_data_length);
@@ -95,10 +95,10 @@ ExtensionArray add_key_share(ExtensionArray ea, uint16_t group, unsigned char* k
     assert(buf!=NULL);
     unsigned char* iter = buf;
 
-    memcpy(iter, &group, 2);
+    write_uint16(iter, group);
     iter += 2;
 
-    memcpy(iter, &key_exchange_length, 2);
+    write_uint16(iter, key_exchange_length);
     iter += 2;
 
     memcpy(iter, key_exchange, key_exchange_length);

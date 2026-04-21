@@ -39,7 +39,7 @@ Array process_record(TLSPlaintext record){
     memcpy(iter, record.legacy_record_version, 2);
     iter += 2;
 
-    memcpy(iter, &record.length, 2);
+    write_uint16(iter, record.length);
     iter += 2;
 
     memcpy(iter, (unsigned char*)record.fragment, record.length);
