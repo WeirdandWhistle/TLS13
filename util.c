@@ -22,10 +22,10 @@ void indent(int amount){
 }
 unsigned char* process_uint24(uint32_t num){
     unsigned char* buf = malloc(3);
-    num = htons(num);
-    buf[0] = (num >> 16) & 0xFF;
-    buf[1] = (num >> 8) & 0xFF;
-    buf[2] = (num) & 0xFF;
+    uint32_t a = htonl(num);
+    buf[0] = (a >> 8) & 0xFF;
+    buf[1] = (a >> 16) & 0xFF;
+    buf[2] = (a >> 24) & 0xFF;
     return buf;
 }
 void write_uint16(unsigned char* p, uint16_t num){
