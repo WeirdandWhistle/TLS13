@@ -63,7 +63,12 @@ int main(){
 
     Array r_arr = process_record(r);
 
+    printf("record length %d, handshake length %d, serverhello_arr length %d\n",r.length,send_hs.length,sh_arr.length);
+    printf("handshake output: "); print_hex(hs_arr.ptr, hs_arr.length);
+
     write(s, r_arr.ptr, r_arr.length);
+
+    sleep(1);
 
     free(sh_arr.ptr);
     free(hs_arr.ptr);

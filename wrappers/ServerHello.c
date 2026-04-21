@@ -26,6 +26,11 @@ Array process_server_hello(ServerHello sh){
     *iter = sh.legacy_compression_method;
     iter++;
 
+    sh.extensions_length = extensions_length(sh.extensions);
+
+    write_uint16(iter, sh.extensions_length);
+    iter += 2;
+
     Array ex = process_extensions(sh.extensions);
 
     memcpy(iter, ex.ptr, ex.length);
