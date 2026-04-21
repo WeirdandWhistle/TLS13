@@ -80,10 +80,28 @@ int extensions_length(ExtensionArray ea){
     }
     return length;
 }
+ExtensionArray add_extension(ExtensionArray ea, uint16_t type, uint16_t length, unsigned char* data){
+    ea = grow_extensions(ea, 1);
+
+    int i = ea.length - 1;
+
+    ea.array[i].extension_data = malloc(length);
+    memcpy(ea.array[i].extension_data, data, length);
+    
+    ea.array[i].extension_data_length = length;
+    ea.array[i].extension_type = type;
+
+    return ea;
+}
 ExtensionArray grow_extensions(ExtensionArray ea, int amount){
     ea.length+=amount;
-    ea.array = realloc(ea.array, sizeof(Extension)*ea.length);
+    if(ea.array == NULL){
+        ea.array = malloc(sizeof(Extension)*ea.length);
+    } else {
+        ea.array = realloc(ea.array, sizeof(Extension)*ea.length);
+    }
     assert(ea.array!=NULL);
+    return ea;
 }
 ExtensionArray add_key_share(ExtensionArray ea, uint16_t group, unsigned char* key_exchange, uint16_t key_exchange_length){
     ea = grow_extensions(ea, 1);
@@ -108,6 +126,12 @@ ExtensionArray add_key_share(ExtensionArray ea, uint16_t group, unsigned char* k
     ea.array[ea.length-1].extension_data = buf;
 
     return ea;    
+}
+ExtensionArray add_supported_versions(ExtensionArray ea){
+    unsigned char VERSION[] = {0x03, 0x04}; // constant
+    const uint16_t type = SUPPORTED_VERSIONS_EXTENSION_TYPE;
+
+    return add_extension(ea, type, 2, VERSION);
 }
 void log_extensions(ExtensionArray ea, int indent_level){
     int id = indent_level;

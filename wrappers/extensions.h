@@ -9,6 +9,8 @@
     void log_extensions(ExtensionArray ea, int indent_level);
     char* get_extension_name(uint16_t type);
     ExtensionArray grow_extensions(ExtensionArray ea, int amount);
+    ExtensionArray add_extension(ExtensionArray ea, uint16_t type, uint16_t length, unsigned char* data);
     ExtensionArray add_key_share(ExtensionArray ea, uint16_t group, unsigned char* key_exchange, uint16_t key_exchange_length);
+    ExtensionArray add_supported_versions(ExtensionArray ea);
 
 #endif

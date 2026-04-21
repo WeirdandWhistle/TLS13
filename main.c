@@ -43,6 +43,7 @@ int main(){
     ea.length = 0;
 
     ea = add_key_share(ea, NAMED_GROUP_X25519, random_buf, 32);
+    ea = add_supported_versions(ea);
 
     ServerHello sh = create_server_hello(random_buf, ch.legacy_session_id_length, ch.legacy_session_id,cs,extensions_length(ea),ea);
 
