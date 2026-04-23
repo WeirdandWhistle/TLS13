@@ -39,17 +39,23 @@ int main(){
 
     unsigned char cs[2] = TLS_CHACHA20_POLY1305_SHA256;
 
-    unsigned char server_private_key[32];
-    unsigned char server_public_key[32];
+    unsigned char server_private_key[SECRET_LENGTH];
+    unsigned char server_public_key[SECRET_LENGTH];
     randombytes_buf(server_private_key, sizeof(server_private_key));
 
     int rc = crypto_scalarmult_base(server_public_key, server_private_key);
     assert(rc==0);
 
-    unsigned char client_public_key[32];
+    unsigned char client_public_key[SECRET_LENGTH];
     get_X25519_key_share(ch.extensions, client_public_key);
 
-    printf("Client pub key: "); print_hex(client_public_key, 32);
+    printf("Client pub key: "); print_hex(client_public_key, SECRET_LENGTH);
+
+    unsigned char* shared_secret[SECRET_LENGTH];
+
+    if(crypto_scalarmult(shared_secret, server_private_key, client_public_key) != 0){
+        assert(0 && "Shared secret calculation failed!");
+    }
 
     ExtensionArray ea = {0};
     ea.length = 0;
