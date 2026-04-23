@@ -15,6 +15,7 @@
 #include "util.h"
 #include "constants.h"
 #include "tls13_types.h"
+#include "key_schedule.h"
 #include "wrappers/record.h"
 #include "wrappers/ClientHello.h"
 #include "wrappers/handshake.h"
