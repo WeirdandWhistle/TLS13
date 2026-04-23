@@ -39,10 +39,22 @@ int main(){
 
     unsigned char cs[2] = TLS_CHACHA20_POLY1305_SHA256;
 
+    unsigned char server_private_key[32];
+    unsigned char server_public_key[32];
+    randombytes_buf(server_private_key, sizeof(server_private_key));
+
+    int rc = crypto_scalarmult_base(server_public_key, server_private_key);
+    assert(rc==0);
+
+    unsigned char client_public_key[32];
+    get_X25519_key_share(ch.extensions, client_public_key);
+
+    printf("Client pub key: "); print_hex(client_public_key, 32);
+
     ExtensionArray ea = {0};
     ea.length = 0;
 
-    ea = add_key_share(ea, NAMED_GROUP_X25519, random_buf, 32);
+    ea = add_key_share(ea, NAMED_GROUP_X25519, server_public_key, 32);
     ea = add_supported_versions(ea);
 
     ServerHello sh = create_server_hello(random_buf, ch.legacy_session_id_length, ch.legacy_session_id,cs,extensions_length(ea),ea);

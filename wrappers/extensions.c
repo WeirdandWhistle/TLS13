@@ -75,8 +75,8 @@ Array process_extensions(ExtensionArray ea){
 int extensions_length(ExtensionArray ea){
     int length = 0;
     for(int i = 0; i<ea.length;i++){
-        length+=4;
-        length+= ea.array[i].extension_data_length;
+        length +=4;
+        length += ea.array[i].extension_data_length;
     }
     return length;
 }
@@ -132,6 +132,53 @@ ExtensionArray add_supported_versions(ExtensionArray ea){
     const uint16_t type = SUPPORTED_VERSIONS_EXTENSION_TYPE;
 
     return add_extension(ea, type, 2, VERSION);
+}
+Extension* get_extension(ExtensionArray ea, uint16_t type){
+    for(int i = 0; ea.length; i++){
+        if(ea.array[i].extension_type == type){
+            return &ea.array[i];
+        }
+    }
+    return NULL;
+}
+void get_X25519_key_share(ExtensionArray ea, unsigned char* out){
+    assert(out!=NULL);
+    Extension* ex_ptr = get_extension(ea, KEY_SHARE_EXTENSION_TYPE);
+    assert(ex_ptr!=NULL);
+    Extension ex = *ex_ptr;
+
+    unsigned char* iter = ex.extension_data;
+
+    uint16_t length;
+    memcpy(&length, iter, 2);
+    iter += 2;
+    length = ntohs(length);
+
+    const uint16_t GROUP = NAMED_GROUP_X25519;
+
+    while(1){
+        uint16_t group;
+        memcpy(&group, iter, 2);
+        iter += 2;
+        group = ntohs(group);
+
+        uint16_t ke_len;
+        memcpy(&ke_len, iter, 2);
+        iter += 2;
+        ke_len = ntohs(ke_len);
+
+        if(group != GROUP){
+            if(iter - ex.extension_data - 2 >= length){
+                assert(0 && "Extension does not have X25519!");
+            }
+            iter += ke_len;
+        } else {
+            assert(ke_len==32);
+            memcpy(out, iter, 32);
+            break;
+        }
+
+    }
 }
 void log_extensions(ExtensionArray ea, int indent_level){
     int id = indent_level;
