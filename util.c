@@ -32,3 +32,8 @@ void write_uint16(unsigned char* p, uint16_t num){
     uint16_t a = htons(num);
     memcpy(p, &a, 2);
 }
+void combine_array(unsigned char* p, unsigned char* a, int a_len, unsigned char* b, int b_len){
+    for(int i = 0; i<a_len+b_len;i++){
+        p[i] = i<a_len ? a[i] : b[i-a_len]; 
+    }
+}
