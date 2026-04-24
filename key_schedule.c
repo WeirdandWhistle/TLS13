@@ -2,7 +2,7 @@
 
 void HKDF_Expand_Label(unsigned char* out, char* Secret, unsigned char* Label, int Label_length, unsigned char* Context, uint8_t Context_length){
     const uint16_t Length = htons(SECRET_LENGTH);
-    const unsigned char BASE_LABEL = {'t','l','s','1','3',' '};
+    unsigned char BASE_LABEL[] = {'t','l','s','1','3',' '};
     int len = 2 + 1 + 6 + Label_length + 1 + Context_length;
     unsigned char* buf = malloc(len);
     assert(buf!=NULL);
@@ -22,7 +22,7 @@ void HKDF_Expand_Label(unsigned char* out, char* Secret, unsigned char* Label, i
     memcpy(iter, label, label_length);
     iter += label_length;
 
-    *iter = Context;
+    *iter = Context_length;
     iter++;
 
     memcpy(iter, Context, Context_length);

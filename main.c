@@ -50,9 +50,9 @@ int main(){
     get_X25519_key_share(ch.extensions, client_public_key);
 
     printf("Client pub key: "); print_hex(client_public_key, SECRET_LENGTH);
-
-    unsigned char* shared_secret[SECRET_LENGTH];
-
+    
+    
+    unsigned char shared_secret[SECRET_LENGTH];
     if(crypto_scalarmult(shared_secret, server_private_key, client_public_key) != 0){
         assert(0 && "Shared secret calculation failed!");
     }
@@ -86,6 +86,20 @@ int main(){
     printf("handshake output: "); print_hex(hs_arr.ptr, hs_arr.length);
 
     write(s, r_arr.ptr, r_arr.length);
+
+    unsigned char hash[32];
+    crypto_hash_sha256_state state;
+    crypto_hash_sha256_init(&state);
+
+    crypto_hash_sha256_update(&state, record.fragment, record.length);
+    crypto_hash_sha256_update(&state, r.fragment, r.length);
+
+    crypto_hash_sha256_final(&state, hash);
+
+    unsigned char server_hs_traffic_secret[SECRET_LENGTH];
+    process_server_handshake_traffic_secret(server_hs_traffic_secret, shared_secret, hash);
+
+    printf("server traffic secret: "); print_hex(server_hs_traffic_secret, 32);
 
     sleep(1);
 
