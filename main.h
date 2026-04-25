@@ -21,5 +21,6 @@
 #include "wrappers/handshake.h"
 #include "wrappers/extensions.h"
 #include "wrappers/ServerHello.h"
+#include "wrappers/EncryptedExtensions.h"
 
 #endif

@@ -43,7 +43,9 @@ void free_extensions(ExtensionArray ea){
     for(int i = 0; i<ea.length;i++){
         free(ea.array[i].extension_data);
     }
-    free(ea.array);
+    if(ea.array != NULL){
+        free(ea.array);
+    }
 }
 /*Dont forget to free the ptr!*/
 Array process_extensions(ExtensionArray ea){

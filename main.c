@@ -87,6 +87,9 @@ int main(){
 
     write(s, r_arr.ptr, r_arr.length);
 
+    free_handshake(send_hs);
+    free(r_arr.ptr);
+
     unsigned char hash[32];
     crypto_hash_sha256_state state;
     crypto_hash_sha256_init(&state);
@@ -101,12 +104,50 @@ int main(){
 
     printf("server traffic secret: "); print_hex(server_hs_traffic_secret, 32);
 
-    sleep(1);
+    EncryptedExtensions ee = {0};
+    log_extensions(ee.extensions, 1);
 
-    free(sh_arr.ptr);
+    Array ee_arr = process_encrypted_extensions(ee);
+
+    Handshake hs = {0};
+    hs.body = ee_arr.ptr;
+    hs.length = ee_arr.length;
+    hs.msg_type = 8;
+
     free(hs_arr.ptr);
+    hs_arr = process_handshake(hs);
+    // free_handshake(hs);
+
+    // free_record(r);
+    r.fragment = hs_arr.ptr;
+    r.length = hs_arr.length;
+    r.type = 22;
+
+    uint8_t nonce_counter = 0;
+
+    unsigned char server_write_key[SECRET_LENGTH];
+    generate_write_iv(server_write_key, server_hs_traffic_secret);
+
+    unsigned char server_write_iv[NONCE_LENGTH];
+    generate_write_iv(server_write_iv, server_hs_traffic_secret);
+
+    unsigned char nonce[NONCE_LENGTH];
+    generate_nonce(nonce, server_write_iv, nonce_counter);
+
+    r_arr = encrypt_record(r, server_write_key, nonce);
+
+    write(s, r_arr.ptr, r_arr.length);
+
     free(r_arr.ptr);
 
+    sleep(1);
+
+    free_encrypted_extensions(ee);
+
+    // free(sh_arr.ptr);
+    // free(hs_arr.ptr);
+    // free(r_arr.ptr);
+  
     free_client_hello(ch);
     free_handshake(handshake);
     free_record(record);

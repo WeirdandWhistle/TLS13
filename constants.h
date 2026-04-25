@@ -5,8 +5,12 @@
     #define SOCKET_BACKLOG 5
     #define INDENT_PRODUCT 4
     #define INDENT_CHAR ' '
+    #define PADDING_MIN 0 
+    #define PADDING_MAX 100
 
     #define SECRET_LENGTH 32
+    #define AEAD_TAG_LENGTH 16
+    #define NONCE_LENGTH 12
 
     #define TLS_CHACHA20_POLY1305_SHA256 {0x13, 0x03}
     #define KEY_SHARE_EXTENSION_TYPE 51

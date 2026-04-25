@@ -77,6 +77,11 @@
     } ServerHello;
 
     typedef struct {
+        uint16_t extensions_length;
+        ExtensionArray extensions;
+    } EncryptedExtensions;
+
+    typedef struct {
         unsigned char level; //AlertLevel
         unsigned char description; //AlertDescription
     } Alert;
