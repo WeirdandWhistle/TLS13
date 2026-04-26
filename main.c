@@ -126,13 +126,16 @@ int main(){
     uint8_t nonce_counter = 0;
 
     unsigned char server_write_key[SECRET_LENGTH];
-    generate_write_iv(server_write_key, server_hs_traffic_secret);
+    generate_write_key(server_write_key, server_hs_traffic_secret);
 
     unsigned char server_write_iv[NONCE_LENGTH];
     generate_write_iv(server_write_iv, server_hs_traffic_secret);
 
     unsigned char nonce[NONCE_LENGTH];
     generate_nonce(nonce, server_write_iv, nonce_counter);
+
+    printf("server_write_key: "); print_hex(server_write_key, sizeof(server_write_key));
+    printf("server_write_iv: "); print_hex(server_write_iv, sizeof(server_write_iv));
 
     r_arr = encrypt_record(r, server_write_key, nonce);
 

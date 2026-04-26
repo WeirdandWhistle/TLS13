@@ -1,7 +1,7 @@
 #include "main.h"
 
-void HKDF_Expand_Label(unsigned char* out, char* Secret, unsigned char* Label, int Label_length, unsigned char* Context, uint8_t Context_length, int length){
-    const uint16_t Length = htons(SECRET_LENGTH);
+void HKDF_Expand_Label(unsigned char* out, char* Secret, unsigned char* Label, int Label_length, unsigned char* Context, uint8_t Context_length, uint16_t length){
+    const uint16_t Length = htons(length);
     unsigned char BASE_LABEL[] = {'t','l','s','1','3',' '};
     int len = 2 + 1 + 6 + Label_length + 1 + Context_length;
     unsigned char* buf = malloc(len);
@@ -64,8 +64,8 @@ void generate_nonce(unsigned char *out, unsigned char *iv, uint8_t counter){
 	out[11] = iv[11] ^ counter;
 }
 void generate_write_key(unsigned char* out, unsigned char* secret){
-    HKDF_Expand_Label(out, secret, "key", 3, NULL, 0, SECRET_LENGTH);
+    HKDF_Expand_Label(out, secret, "key", 3, "", 0, SECRET_LENGTH);
 }
 void generate_write_iv(unsigned char* out, unsigned char* secret){
-    HKDF_Expand_Label(out, secret, "iv", 2, NULL, 0, crypto_aead_chacha20poly1305_IETF_NPUBBYTES);
+    HKDF_Expand_Label(out, secret, "iv", 2, "", 0, crypto_aead_chacha20poly1305_IETF_NPUBBYTES);
 }
