@@ -94,7 +94,6 @@ Array encrypt_record(TLSPlaintext record, unsigned char* key, unsigned char* non
     unsigned long long cipher_text_length;
 
     unsigned long long TLSIPLTL_buf = TLSInnerPlainText_length;
-    printf("what am i acural encypting?"); print_hex(TLSInnerPlainText, TLSIPLTL_buf);
 
     int rc = crypto_aead_chacha20poly1305_ietf_encrypt(cipher_text, &cipher_text_length,
                                                         TLSInnerPlainText, TLSIPLTL_buf,
@@ -104,8 +103,6 @@ Array encrypt_record(TLSPlaintext record, unsigned char* key, unsigned char* non
     
     assert(cipher_text_length == len - sizeof(additonal_data));
     assert(len == sizeof(additonal_data) + cipher_text_length);      
-    
-    printf("RC: %d\nciphertext_length: %d\nlen: %d\n",rc,cipher_text_length,len);
 
     unsigned char* buf = malloc(sizeof(additonal_data) + cipher_text_length);
     assert(buf!=NULL);

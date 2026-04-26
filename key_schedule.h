@@ -8,5 +8,6 @@
     void generate_nonce(unsigned char *out, unsigned char *iv, uint8_t counter);
     void generate_write_key(unsigned char* out, unsigned char* secret);
     void generate_write_iv(unsigned char* out, unsigned char* secret);
+    void get_hash(crypto_hash_sha256_state *ptr, unsigned char *out);
 
 #endif

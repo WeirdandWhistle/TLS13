@@ -97,7 +97,7 @@ int main(){
     crypto_hash_sha256_update(&state, record.fragment, record.length);
     crypto_hash_sha256_update(&state, r.fragment, r.length);
 
-    crypto_hash_sha256_final(&state, hash);
+    get_hash(&state, hash);
 
     unsigned char server_hs_traffic_secret[SECRET_LENGTH];
     process_server_handshake_traffic_secret(server_hs_traffic_secret, shared_secret, hash);

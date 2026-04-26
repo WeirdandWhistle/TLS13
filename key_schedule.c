@@ -69,3 +69,9 @@ void generate_write_key(unsigned char* out, unsigned char* secret){
 void generate_write_iv(unsigned char* out, unsigned char* secret){
     HKDF_Expand_Label(out, secret, "iv", 2, "", 0, crypto_aead_chacha20poly1305_IETF_NPUBBYTES);
 }
+/*Handly little funciton for getting the sha256 hash with out finalying the running hash!*/
+void get_hash(crypto_hash_sha256_state *ptr, unsigned char *out){
+	crypto_hash_sha256_state copy;
+	memcpy(&copy,ptr,sizeof(crypto_hash_sha256_state));
+	crypto_hash_sha256_final(&copy, out);
+}
