@@ -2,3 +2,4 @@ main
 micro_ecc/*.inc
 micro_ecc/*.h
 micro_ecc/*.c
+*.o
