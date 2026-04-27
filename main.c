@@ -123,6 +123,8 @@ int main(){
     r.length = hs_arr.length;
     r.type = 22;
 
+    crypto_hash_sha256_update(&state, r.fragment, r.length);
+
     uint8_t nonce_counter = 0;
 
     unsigned char server_write_key[SECRET_LENGTH];
@@ -133,6 +135,7 @@ int main(){
 
     unsigned char nonce[NONCE_LENGTH];
     generate_nonce(nonce, server_write_iv, nonce_counter);
+    nonce_counter++;
 
     printf("server_write_key: "); print_hex(server_write_key, sizeof(server_write_key));
     printf("server_write_iv: "); print_hex(server_write_iv, sizeof(server_write_iv));
@@ -146,6 +149,10 @@ int main(){
     sleep(1);
 
     free_encrypted_extensions(ee);
+
+    if(SEND_CERTIFICATE){
+        printf("prendtend i am sending a cert\n");
+    }
 
     // free(sh_arr.ptr);
     // free(hs_arr.ptr);
