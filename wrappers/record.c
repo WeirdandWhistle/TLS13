@@ -100,9 +100,10 @@ Array encrypt_record(TLSPlaintext record, unsigned char* key, unsigned char* non
                                                         additonal_data, sizeof(additonal_data),
                                                         NULL,
                                                         nonce, key);
-    
+                                                        
+    assert(rc!=0);
     assert(cipher_text_length == len - sizeof(additonal_data));
-    assert(len == sizeof(additonal_data) + cipher_text_length);      
+    assert(len == (int)(sizeof(additonal_data) + cipher_text_length));      
 
     unsigned char* buf = malloc(sizeof(additonal_data) + cipher_text_length);
     assert(buf!=NULL);
