@@ -82,6 +82,24 @@
     } EncryptedExtensions;
 
     typedef struct {
+        uint32_t cert_data_length; //uint24;
+        unsigned char* cert_data;
+        ExtensionArray extensions;
+    } CertificateEntry;
+
+    typedef struct {
+        int length;
+        CertificateEntry* certs;
+    } CertificateChain;
+
+    typedef struct {
+        uint8_t certificate_request_context_length;
+        unsigned char* certificate_request_context;
+        uint32_t certificate_list_length; //uint24
+        CertificateChain certificate_list;
+    } Certificate;
+
+    typedef struct {
         unsigned char level; //AlertLevel
         unsigned char description; //AlertDescription
     } Alert;
