@@ -5,3 +5,4 @@ to make this project you need to install micro-ecc into this dir. todo this copy
 `uECC.h` https://github.com/kmackay/micro-ecc/blob/master/uECC.h
 `uECC_vli.h` https://github.com/kmackay/micro-ecc/blob/master/uECC_vli.h
 `platform-specific.inc` https://github.com/kmackay/micro-ecc/blob/master/platform-specific.inc
+`curve-specific.inc` https://github.com/kmackay/micro-ecc/blob/master/curve-specific.inc
