@@ -140,27 +140,49 @@ int main(){
     printf("server_write_key: "); print_hex(server_write_key, sizeof(server_write_key));
     printf("server_write_iv: "); print_hex(server_write_iv, sizeof(server_write_iv));
 
+    printf("sending encrypted extensions!\n");
     r_arr = encrypt_record(r, server_write_key, nonce);
 
     write(s, r_arr.ptr, r_arr.length);
 
     free(r_arr.ptr);
 
-    sleep(1);
-
-    free_encrypted_extensions(ee);
-
-    if(SEND_CERTIFICATE){
-        printf("prendtend i am sending a cert\n");
-    }
-
-    // free(sh_arr.ptr);
-    // free(hs_arr.ptr);
-    // free(r_arr.ptr);
-  
+    free_encrypted_extensions(ee);  
     free_client_hello(ch);
     free_handshake(handshake);
     free_record(record);
+
+    if(SEND_CERTIFICATE){
+        printf("preparing cert/encrypted record!\n");
+        Certificate certificate = create_certificate(CERT_FILE);
+        printf("processing cert\n");
+        Array cert = process_certificate(certificate);
+
+        printf("cert: "); print_hex(cert.ptr, cert.length);
+
+        hs.body = cert.ptr;
+        hs.length = cert.length;
+        hs.msg_type = (unsigned char) CERTFICATE_TYPE;
+        printf("porcessing hs\n");
+        hs_arr = process_handshake(hs);
+
+        r.fragment = hs_arr.ptr;
+        r.length = hs_arr.length;
+        r.type = HANDSHAKE_TYPE;
+        
+        generate_nonce(nonce, server_write_iv, nonce_counter);
+        nonce_counter++;
+
+        r_arr = encrypt_record(r, server_write_key, nonce);
+
+        write(s, r_arr.ptr, r_arr.length);
+
+        free(r_arr.ptr);
+        free(hs_arr.ptr);
+        free_certificate(certificate);
+    }
+
+    sleep(5);
 
     return 0;
 }
