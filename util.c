@@ -20,13 +20,11 @@ void indent(int amount){
         putchar(INDENT_CHAR);
     }
 }
-unsigned char* process_uint24(uint32_t num){
-    unsigned char* buf = malloc(3);
+void process_uint24(uint32_t num, unsigned char* out){
     uint32_t a = htonl(num);
-    buf[0] = (a >> 8) & 0xFF;
-    buf[1] = (a >> 16) & 0xFF;
-    buf[2] = (a >> 24) & 0xFF;
-    return buf;
+    out[0] = (a >> 8) & 0xFF;
+    out[1] = (a >> 16) & 0xFF;
+    out[2] = (a >> 24) & 0xFF;
 }
 void write_uint16(unsigned char* p, uint16_t num){
     uint16_t a = htons(num);
