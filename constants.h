@@ -21,5 +21,6 @@
     #define NAMED_GROUP_X25519 0x001D
     #define SERVER_HELLO_HEADER 2
     #define HANDSHAKE_TYPE 22
+    #define CERTFICATE_TYPE 11
 
 #endif
