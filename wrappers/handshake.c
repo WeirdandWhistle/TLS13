@@ -35,10 +35,10 @@ Array process_handshake(Handshake handshake){
     *iter = handshake.msg_type;
     iter++;
 
-    unsigned char* uint24_buf = process_uint24(handshake.length);
+    unsigned char uint24_buf[3];
+    process_uint24(handshake.length, uint24_buf);
     memcpy(iter, uint24_buf, 3);
     iter += 3;
-    free(uint24_buf);
 
     memcpy(iter, (unsigned char*)handshake.body, handshake.length);
 
