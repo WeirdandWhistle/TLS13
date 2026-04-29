@@ -55,7 +55,7 @@ Array process_record(TLSPlaintext record){
 Array encrypt_record(TLSPlaintext record, unsigned char* key, unsigned char* nonce){
     srand(time(NULL));
     int padding_length = rand() % (PADDING_MAX - PADDING_MIN + 1) + PADDING_MIN;
-    printf("padding_length: %d\n",padding_length);
+    // printf("padding_length: %d\n",padding_length);
     uint16_t TLSInnerPlainText_length = (record.length + 1 + padding_length);
     int len = 1 + 2 + 2 + TLSInnerPlainText_length + AEAD_TAG_LENGTH;
 
@@ -92,8 +92,11 @@ Array encrypt_record(TLSPlaintext record, unsigned char* key, unsigned char* non
 
     unsigned char* cipher_text = malloc(TLSInnerPlainText_length + AEAD_TAG_LENGTH);
     unsigned long long cipher_text_length;
+    assert(cipher_text!=NULL);
 
     unsigned long long TLSIPLTL_buf = TLSInnerPlainText_length;
+
+    // printf("ci");
 
     int rc = crypto_aead_chacha20poly1305_ietf_encrypt(cipher_text, &cipher_text_length,
                                                         TLSInnerPlainText, TLSIPLTL_buf,
@@ -101,7 +104,7 @@ Array encrypt_record(TLSPlaintext record, unsigned char* key, unsigned char* non
                                                         NULL,
                                                         nonce, key);
                                                         
-    assert(rc!=0);
+    assert(rc==0);
     assert(cipher_text_length == len - sizeof(additonal_data));
     assert(len == (int)(sizeof(additonal_data) + cipher_text_length));      
 
