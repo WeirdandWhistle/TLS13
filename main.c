@@ -177,9 +177,14 @@ int main(){
 
         write(s, r_arr.ptr, r_arr.length);
 
+        crypto_hash_sha256_update(&state, r.fragment, r.length);
+
         free(r_arr.ptr);
         free(hs_arr.ptr);
         free_certificate(certificate);
+        
+        unsigned char cert_private_key[32];
+        load_cert_private_key(cert_private_key, KEY_FILE);
     }
 
     sleep(5);

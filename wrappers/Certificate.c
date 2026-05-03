@@ -16,6 +16,7 @@ Certificate create_certificate(char* file){
 
 	unsigned char *cert_data = malloc(cert_data_length);
 	fread(cert_data, 1, cert_data_length, filePtr);
+    fclose(filePtr);
 
     ExtensionArray ea = {0};
     ea.length = 0;

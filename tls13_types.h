@@ -100,6 +100,12 @@
     } Certificate;
 
     typedef struct {
+        uint16_t algorithm;
+        uint16_t signature_length;
+        unsigned char* signature;
+    } CertificateVerify;
+
+    typedef struct {
         unsigned char level; //AlertLevel
         unsigned char description; //AlertDescription
     } Alert;

@@ -23,5 +23,6 @@
 #include "wrappers/ServerHello.h"
 #include "wrappers/EncryptedExtensions.h"
 #include "wrappers/Certificate.h"
+#include "wrappers/CertificateVerify.h"
 
 #endif
