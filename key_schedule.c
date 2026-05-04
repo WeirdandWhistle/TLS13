@@ -75,3 +75,9 @@ void get_hash(crypto_hash_sha256_state *ptr, unsigned char *out){
 	memcpy(&copy,ptr,sizeof(crypto_hash_sha256_state));
 	crypto_hash_sha256_final(&copy, out);
 }
+void generate_finished_key(unsigned char* out, unsigned char* base_key){
+    HKDF_Expand_Label(out, base_key, (unsigned char*)"finished", sizeof("finished")-1, (unsigned char*)"", 0, HASH_LENGTH);
+}
+void process_verify_data(unsigned char* out, unsigned char* finished_key, unsigned char* transcipt_hash){
+    crypto_auth_hmacsha256(out, transcipt_hash, HASH_LENGTH, finished_key);
+}

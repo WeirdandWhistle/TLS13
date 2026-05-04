@@ -90,7 +90,7 @@ int main(){
     free_handshake(send_hs);
     free(r_arr.ptr);
 
-    unsigned char hash[32];
+    unsigned char hash[HASH_LENGTH];
     crypto_hash_sha256_state state;
     crypto_hash_sha256_init(&state);
 
@@ -99,10 +99,10 @@ int main(){
 
     get_hash(&state, hash);
 
-    unsigned char server_hs_traffic_secret[SECRET_LENGTH];
-    process_server_handshake_traffic_secret(server_hs_traffic_secret, shared_secret, hash);
+    unsigned char server_handshake_traffic_secret[SECRET_LENGTH];
+    process_server_handshake_traffic_secret(server_handshake_traffic_secret, shared_secret, hash);
 
-    printf("server traffic secret: "); print_hex(server_hs_traffic_secret, 32);
+    printf("server traffic secret: "); print_hex(server_handshake_traffic_secret, 32);
 
     EncryptedExtensions ee = {0};
     log_extensions(ee.extensions, 1);
@@ -128,10 +128,10 @@ int main(){
     uint8_t nonce_counter = 0;
 
     unsigned char server_write_key[SECRET_LENGTH];
-    generate_write_key(server_write_key, server_hs_traffic_secret);
+    generate_write_key(server_write_key, server_handshake_traffic_secret);
 
     unsigned char server_write_iv[NONCE_LENGTH];
-    generate_write_iv(server_write_iv, server_hs_traffic_secret);
+    generate_write_iv(server_write_iv, server_handshake_traffic_secret);
 
     unsigned char nonce[NONCE_LENGTH];
     generate_nonce(nonce, server_write_iv, nonce_counter);
@@ -206,10 +206,44 @@ int main(){
 
         write(s, r_arr.ptr, r_arr.length);
 
+        crypto_hash_sha256_update(&state, r.fragment, r.length);
+
         free(r_arr.ptr);
         free(hs_arr.ptr);
         free(cv_arr.ptr);
-        free_certificate_verify(cv);        
+        free_certificate_verify(cv);
+    }
+
+    if(SEND_FINISHED){
+        get_hash(&state, hash);
+
+        unsigned char finished_key[SECRET_LENGTH];
+        generate_finished_key(finished_key, server_handshake_traffic_secret);
+
+        unsigned char verify_data[HASH_LENGTH];
+        process_verify_data(verify_data, finished_key, hash);
+
+        hs.body = verify_data;
+        hs.length = sizeof(verify_data);
+        hs.msg_type = FINISHED_TYPE;
+
+        hs_arr = process_handshake(hs);
+
+        r.fragment = hs_arr.ptr;
+        r.length = hs_arr.length;
+        r.type = HANDSHAKE_TYPE;
+
+        generate_nonce(nonce, server_write_iv, nonce_counter);
+        nonce_counter++;
+
+        r_arr = encrypt_record(r, server_write_key, nonce);
+
+        write(s, r_arr.ptr, r_arr.length);
+
+        free(r_arr.ptr);
+        free(hs_arr.ptr);
+
+        printf("----- FINISHED MESSAGE SENT! -----\n");
     }
 
     sleep(5);

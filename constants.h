@@ -12,9 +12,11 @@
     #define CERT_FILE "keys/cert.der"
 
     #define SECRET_LENGTH 32
+    #define HASH_LENGTH 32 // little late to be added but what ever
     #define AEAD_TAG_LENGTH 16
     #define NONCE_LENGTH 12
 
+    #define SEND_FINISHED 1
     #define TLS_CHACHA20_POLY1305_SHA256 {0x13, 0x03}
     #define KEY_SHARE_EXTENSION_TYPE 51
     #define SUPPORTED_VERSIONS_EXTENSION_TYPE 43
@@ -23,6 +25,7 @@
     #define HANDSHAKE_TYPE 22
     #define CERTIFICATE_TYPE 11
     #define CERTIFICATE_VERIFY_TYPE 15
+    #define FINISHED_TYPE 20
     #define ECDSA_SECP256R1_SHA256 0x0403
     #define CERT_VERIFY_CONTEXT_STRING "TLS 1.3, server CertificateVerify"
 

@@ -9,5 +9,7 @@
     void generate_write_key(unsigned char* out, unsigned char* secret);
     void generate_write_iv(unsigned char* out, unsigned char* secret);
     void get_hash(crypto_hash_sha256_state *ptr, unsigned char *out);
+    void generate_finished_key(unsigned char* out, unsigned char* base_key);
+    void process_verify_data(unsigned char* out, unsigned char* finished_key, unsigned char* transcipt_hash);
 
 #endif
