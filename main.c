@@ -162,7 +162,7 @@ int main(){
 
         hs.body = cert.ptr;
         hs.length = cert.length;
-        hs.msg_type = (unsigned char) CERTFICATE_TYPE;
+        hs.msg_type = (unsigned char) CERTIFICATE_TYPE;
         printf("porcessing hs\n");
         hs_arr = process_handshake(hs);
 
@@ -182,9 +182,34 @@ int main(){
         free(r_arr.ptr);
         free(hs_arr.ptr);
         free_certificate(certificate);
-        
-        unsigned char cert_private_key[32];
-        load_cert_private_key(cert_private_key, KEY_FILE);
+
+        get_hash(&state, hash);
+
+        CertificateVerify cv = create_certificate_verify(hash);
+
+        Array cv_arr = process_certificate_verify(cv);
+
+        hs.body = cv_arr.ptr;
+        hs.length = cv_arr.length;
+        hs.msg_type = CERTIFICATE_VERIFY_TYPE;
+
+        hs_arr = process_handshake(hs);
+
+        r.fragment = hs_arr.ptr;
+        r.length = hs_arr.length;
+        r.type = HANDSHAKE_TYPE;
+
+        generate_nonce(nonce, server_write_iv, nonce_counter);
+        nonce_counter++;
+
+        r_arr = encrypt_record(r, server_write_key, nonce);
+
+        write(s, r_arr.ptr, r_arr.length);
+
+        free(r_arr.ptr);
+        free(hs_arr.ptr);
+        free(cv_arr.ptr);
+        free_certificate_verify(cv);        
     }
 
     sleep(5);

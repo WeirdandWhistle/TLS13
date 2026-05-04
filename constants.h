@@ -21,7 +21,8 @@
     #define NAMED_GROUP_X25519 0x001D
     #define SERVER_HELLO_HEADER 2
     #define HANDSHAKE_TYPE 22
-    #define CERTFICATE_TYPE 11
+    #define CERTIFICATE_TYPE 11
+    #define CERTIFICATE_VERIFY_TYPE 15
     #define ECDSA_SECP256R1_SHA256 0x0403
     #define CERT_VERIFY_CONTEXT_STRING "TLS 1.3, server CertificateVerify"
 
