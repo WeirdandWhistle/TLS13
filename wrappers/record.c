@@ -125,3 +125,51 @@ Array encrypt_record(TLSPlaintext record, unsigned char* key, unsigned char* non
     arr.length = len;
     return arr;
 }
+TLSPlaintext decrypt_record(int socket, unsigned char* key, unsigned char* nonce){
+    TLSPlaintext er = read_record(socket);
+
+    if(er.type != APPLIACTION_TYPE){
+        assert(0 && "record has to be appliction type");
+    }
+    if(er.legacy_record_version[0] != 0x03 || er.legacy_record_version[1] != 0x03){
+        assert(0 && "record must be version TLS 1.2 (0x0303)");
+    }
+    assert(er.fragment!=NULL);
+
+    unsigned char additional_data[5];
+    process_record_headers(additional_data, er);
+
+    unsigned char* buf = malloc(er.length - AEAD_TAG_LENGTH + 100);
+    unsigned long long buf_len = 0;
+    assert(buf!=NULL);
+
+    int rc = crypto_aead_chacha20poly1305_ietf_decrypt(buf, &buf_len,
+                                            NULL,
+                                            er.fragment, er.length,
+                                            additional_data, sizeof(additional_data),
+                                            nonce, key);
+
+    assert(rc==0);
+    assert((int) buf_len==er.length-AEAD_TAG_LENGTH);
+
+    int padding_offset = 0;
+    unsigned char* iter = buf + buf_len-1;
+    while(*iter == 0){
+        padding_offset++;
+        iter--;
+    }
+
+    unsigned char content_type = buf[buf_len - 1 - padding_offset];
+    printf("content_type: %02x\n",content_type);
+    printf("content: "); print_hex(buf, buf_len - 1 - padding_offset);
+
+    return er;
+}
+void process_record_headers(unsigned char* out, TLSPlaintext record){
+    out[0] = record.type;
+    out[1] = record.legacy_record_version[0];
+    out[2] = record.legacy_record_version[1];
+
+    write_uint16(out+3, record.length);
+    printf("record headers: "); print_hex(out, 5);
+}

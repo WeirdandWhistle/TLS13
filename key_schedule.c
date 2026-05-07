@@ -37,7 +37,16 @@ void process_server_handshake_traffic_secret(unsigned char* out, unsigned char* 
     unsigned char handshake_secret[SECRET_LENGTH];
     process_handshake_secret(handshake_secret, shared_secret, derived_secret);
 
-    HKDF_Expand_Label(out, handshake_secret, (unsigned char*)"s hs traffic", sizeof("s hs traffic")-1, transcipt_hash, SECRET_LENGTH, SECRET_LENGTH);
+    HKDF_Expand_Label(out, handshake_secret, (unsigned char*)"s hs traffic", sizeof("s hs traffic")-1, transcipt_hash, HASH_LENGTH, SECRET_LENGTH);
+}
+void process_client_handshake_traffic_secret(unsigned char* out, unsigned char* shared_secret, unsigned char* transcipt_hash){
+    unsigned char derived_secret[SECRET_LENGTH];
+    process_base_derived_secret(derived_secret);
+
+    unsigned char handshake_secret[SECRET_LENGTH];
+    process_handshake_secret(handshake_secret, shared_secret, derived_secret);
+
+    HKDF_Expand_Label(out, handshake_secret, (unsigned char*)"c hs traffic", sizeof("c hs traffic")-1, transcipt_hash, HASH_LENGTH, SECRET_LENGTH);
 }
 void process_base_derived_secret(unsigned char* out){
     const unsigned char ZERO[SECRET_LENGTH] = {0};

@@ -32,7 +32,7 @@ int main(){
     printf("start ClientHello parsing\n");
     ClientHello ch = parse_client_hello(handshake.body, handshake.length);
 
-    log_client_hello(ch,1);
+    // log_client_hello(ch,1);
 
     unsigned char random_buf[32];
     randombytes_buf(random_buf, sizeof(random_buf));
@@ -49,7 +49,7 @@ int main(){
     unsigned char client_public_key[SECRET_LENGTH];
     get_X25519_key_share(ch.extensions, client_public_key);
 
-    printf("Client pub key: "); print_hex(client_public_key, SECRET_LENGTH);
+    // printf("Client pub key: "); print_hex(client_public_key, SECRET_LENGTH);
     
     
     unsigned char shared_secret[SECRET_LENGTH];
@@ -82,13 +82,18 @@ int main(){
 
     Array r_arr = process_record(r);
 
-    printf("record length %d, handshake length %d, serverhello_arr length %d\n",r.length,send_hs.length,sh_arr.length);
-    printf("handshake output: "); print_hex(hs_arr.ptr, hs_arr.length);
+    // printf("record length %d, handshake length %d, serverhello_arr length %d\n",r.length,send_hs.length,sh_arr.length);
+    // printf("handshake output: "); print_hex(hs_arr.ptr, hs_arr.length);
 
     write(s, r_arr.ptr, r_arr.length);
 
     free_handshake(send_hs);
     free(r_arr.ptr);
+
+    if(SEND_CHANGE_CIPHER_SPEC){
+        unsigned char change_cipher_spec[] = {20, 0x03, 0x03, 00, 01, 1};
+        write(s, change_cipher_spec, sizeof(change_cipher_spec));
+    }
 
     unsigned char hash[HASH_LENGTH];
     crypto_hash_sha256_state state;
@@ -101,11 +106,14 @@ int main(){
 
     unsigned char server_handshake_traffic_secret[SECRET_LENGTH];
     process_server_handshake_traffic_secret(server_handshake_traffic_secret, shared_secret, hash);
+    printf("server traffic secret: "); print_hex(server_handshake_traffic_secret, SECRET_LENGTH);
 
-    printf("server traffic secret: "); print_hex(server_handshake_traffic_secret, 32);
+    unsigned char client_handshake_traffic_secret[SECRET_LENGTH];
+    process_client_handshake_traffic_secret(client_handshake_traffic_secret, shared_secret, hash);
+    printf("client traffic secret: "); print_hex(client_handshake_traffic_secret, SECRET_LENGTH);
 
     EncryptedExtensions ee = {0};
-    log_extensions(ee.extensions, 1);
+    // log_extensions(ee.extensions, 1);
 
     Array ee_arr = process_encrypted_extensions(ee);
 
@@ -132,6 +140,14 @@ int main(){
 
     unsigned char server_write_iv[NONCE_LENGTH];
     generate_write_iv(server_write_iv, server_handshake_traffic_secret);
+
+
+    unsigned char client_write_key[SECRET_LENGTH];
+    generate_write_key(client_write_key, client_handshake_traffic_secret);
+
+    unsigned char client_write_iv[NONCE_LENGTH];
+    generate_write_iv(client_write_iv, client_handshake_traffic_secret);
+
 
     unsigned char nonce[NONCE_LENGTH];
     generate_nonce(nonce, server_write_iv, nonce_counter);
@@ -244,6 +260,17 @@ int main(){
         free(hs_arr.ptr);
 
         printf("----- FINISHED MESSAGE SENT! -----\n");
+
+        if(SEND_CHANGE_CIPHER_SPEC){
+            // recive cipher spec
+            TLSPlaintext extra =  read_record(s);
+            printf("extra.type %d\n",extra.type);
+        }
+
+        generate_nonce(nonce, client_write_iv, nonce_counter);
+        nonce_counter++;
+
+        decrypt_record(s, client_write_key, nonce);
     }
 
     sleep(5);

@@ -8,6 +8,7 @@
     #define PADDING_MIN 0 
     #define PADDING_MAX 100
     #define SEND_CERTIFICATE 1
+    #define SEND_CHANGE_CIPHER_SPEC 1
     #define KEY_FILE "keys/ec_key.hex"
     #define CERT_FILE "keys/cert.der"
 
@@ -23,6 +24,7 @@
     #define NAMED_GROUP_X25519 0x001D
     #define SERVER_HELLO_HEADER 2
     #define HANDSHAKE_TYPE 22
+    #define APPLIACTION_TYPE 23
     #define CERTIFICATE_TYPE 11
     #define CERTIFICATE_VERIFY_TYPE 15
     #define FINISHED_TYPE 20
