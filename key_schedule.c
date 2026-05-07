@@ -1,4 +1,5 @@
 #include "main.h"
+#include <endian.h>
 
 void HKDF_Expand_Label(unsigned char* out, unsigned char* Secret, unsigned char* Label, int Label_length, unsigned char* Context, uint8_t Context_length, uint16_t length){
     const uint16_t Length = htons(length);
@@ -66,11 +67,13 @@ void process_base_derived_secret(unsigned char* out){
 void process_handshake_secret(unsigned char* out, unsigned char* shared_secret, unsigned char* derived_secret){
     crypto_kdf_hkdf_sha256_extract(out, derived_secret, SECRET_LENGTH, shared_secret, SECRET_LENGTH);
 }
-void generate_nonce(unsigned char *out, unsigned char *iv, uint8_t counter){
-	for(int i = 0; i<=10;i++){
-		out[i] = iv[i];
+void generate_nonce(unsigned char *out, unsigned char *iv, uint64_t counter){
+    memset(out, 0, NONCE_LENGTH);
+    uint64_t temp = htobe64(counter);
+    memcpy(out+(NONCE_LENGTH - sizeof(uint64_t)), &temp, sizeof(uint64_t));
+	for(int i = 0; i < NONCE_LENGTH; i++){
+		out[i] = out[i] ^ iv[i];
 	}
-	out[11] = iv[11] ^ counter;
 }
 void generate_write_key(unsigned char* out, unsigned char* secret){
     HKDF_Expand_Label(out, secret, (unsigned char*)"key", 3, (unsigned char*)"", 0, SECRET_LENGTH);

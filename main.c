@@ -133,7 +133,8 @@ int main(){
 
     crypto_hash_sha256_update(&state, r.fragment, r.length);
 
-    uint8_t nonce_counter = 0;
+    uint64_t server_nonce_counter = 0;
+    uint64_t client_nonce_counter = 0;
 
     unsigned char server_write_key[SECRET_LENGTH];
     generate_write_key(server_write_key, server_handshake_traffic_secret);
@@ -150,8 +151,8 @@ int main(){
 
 
     unsigned char nonce[NONCE_LENGTH];
-    generate_nonce(nonce, server_write_iv, nonce_counter);
-    nonce_counter++;
+    generate_nonce(nonce, server_write_iv, server_nonce_counter);
+    server_nonce_counter++;
 
     printf("server_write_key: "); print_hex(server_write_key, sizeof(server_write_key));
     printf("server_write_iv: "); print_hex(server_write_iv, sizeof(server_write_iv));
@@ -186,8 +187,8 @@ int main(){
         r.length = hs_arr.length;
         r.type = HANDSHAKE_TYPE;
         
-        generate_nonce(nonce, server_write_iv, nonce_counter);
-        nonce_counter++;
+        generate_nonce(nonce, server_write_iv, server_nonce_counter);
+        server_nonce_counter++;
 
         r_arr = encrypt_record(r, server_write_key, nonce);
 
@@ -215,8 +216,8 @@ int main(){
         r.length = hs_arr.length;
         r.type = HANDSHAKE_TYPE;
 
-        generate_nonce(nonce, server_write_iv, nonce_counter);
-        nonce_counter++;
+        generate_nonce(nonce, server_write_iv, server_nonce_counter);
+        server_nonce_counter++;
 
         r_arr = encrypt_record(r, server_write_key, nonce);
 
@@ -249,8 +250,8 @@ int main(){
         r.length = hs_arr.length;
         r.type = HANDSHAKE_TYPE;
 
-        generate_nonce(nonce, server_write_iv, nonce_counter);
-        nonce_counter++;
+        generate_nonce(nonce, server_write_iv, server_nonce_counter);
+        server_nonce_counter++;
 
         r_arr = encrypt_record(r, server_write_key, nonce);
 
@@ -267,8 +268,8 @@ int main(){
             printf("extra.type %d\n",extra.type);
         }
 
-        generate_nonce(nonce, client_write_iv, nonce_counter);
-        nonce_counter++;
+        generate_nonce(nonce, client_write_iv, client_nonce_counter);
+        client_nonce_counter++;
 
         decrypt_record(s, client_write_key, nonce);
     }
