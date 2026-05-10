@@ -28,6 +28,7 @@ TLSPlaintext read_record(int socket){
 }
 void free_record(TLSPlaintext record){
     free(record.fragment);
+    free(record.legacy_record_version);
 }
 Array process_record(TLSPlaintext record){
     int length = 1 + 2 + 2 + record.length;
@@ -153,17 +154,38 @@ TLSPlaintext decrypt_record(int socket, unsigned char* key, unsigned char* nonce
     assert((int) buf_len==er.length-AEAD_TAG_LENGTH);
 
     int padding_offset = 0;
-    unsigned char* iter = buf + buf_len-1;
+    unsigned char* iter = buf;
+    iter += buf_len - 1;
     while(*iter == 0){
         padding_offset++;
         iter--;
     }
 
     unsigned char content_type = buf[buf_len - 1 - padding_offset];
-    printf("content_type: %02x\n",content_type);
-    printf("content: "); print_hex(buf, buf_len - 1 - padding_offset);
+    // printf("padding offset: %d\n", padding_offset);
+    // printf("content_type: %02x\n",content_type);
+    // printf("content: "); print_hex(buf, buf_len - 1 - padding_offset);
 
-    return er;
+    TLSPlaintext dr = {0};
+    dr.type = content_type;
+    dr.legacy_record_version = malloc(2);
+    assert(dr.legacy_record_version!=NULL);
+    dr.legacy_record_version[0] = er.legacy_record_version[0];
+    dr.legacy_record_version[1] = er.legacy_record_version[1];
+    
+    int out_len = buf_len - 1 - padding_offset;
+    unsigned char* out = malloc(out_len);
+    assert(out!=NULL);
+
+    memcpy(out, buf, out_len);
+    
+    free(buf);
+    free_record(er);
+
+    dr.length = out_len;
+    dr.fragment = out;
+
+    return dr;
 }
 void process_record_headers(unsigned char* out, TLSPlaintext record){
     out[0] = record.type;

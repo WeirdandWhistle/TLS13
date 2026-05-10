@@ -257,6 +257,8 @@ int main(){
 
         write(s, r_arr.ptr, r_arr.length);
 
+        crypto_hash_sha256_update(&state, r.fragment, r.length);
+
         free(r_arr.ptr);
         free(hs_arr.ptr);
 
@@ -271,7 +273,29 @@ int main(){
         generate_nonce(nonce, client_write_iv, client_nonce_counter);
         client_nonce_counter++;
 
-        decrypt_record(s, client_write_key, nonce);
+        r = decrypt_record(s, client_write_key, nonce);
+        hs = parse_handshake(r.fragment, r.length);
+
+        printf("verify_data          : "); print_hex(hs.body, hs.length);
+
+        
+
+        get_hash(&state, hash);
+
+        unsigned char client_finished_key[SECRET_LENGTH];
+        generate_finished_key(client_finished_key, client_handshake_traffic_secret);
+
+        unsigned char check_client_verify_data[HASH_LENGTH];
+        process_verify_data(check_client_verify_data, client_finished_key, hash);
+        
+        printf("calculted verify_data: "); print_hex(check_client_verify_data, sizeof(check_client_verify_data));
+
+        int equal = sodium_memcmp(check_client_verify_data, hs.body, HASH_LENGTH) == 0 ? 1 : 0;
+
+        printf("equal? %d\n", equal);
+
+        free_handshake(hs);
+        free_record(r);
     }
 
     sleep(5);
