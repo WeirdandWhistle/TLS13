@@ -12,5 +12,8 @@
     void get_hash(crypto_hash_sha256_state *ptr, unsigned char *out);
     void generate_finished_key(unsigned char* out, unsigned char* base_key);
     void process_verify_data(unsigned char* out, unsigned char* finished_key, unsigned char* transcipt_hash);
+    void process_client_application_traffic_secret_0(unsigned char* out, unsigned char* secret, unsigned char* transcipt_hash);
+    void process_server_application_traffic_secret_0(unsigned char* out, unsigned char* secret, unsigned char* transcipt_hash);
+    void process_master_secret(unsigned char* out, unsigned char* handshake_secret);
 
 #endif

@@ -104,6 +104,9 @@ int main(){
 
     get_hash(&state, hash);
 
+    unsigned char handshake_secret[SECRET_LENGTH];
+    process_handshake_secret(handshake_secret, shared_secret, NULL);
+
     unsigned char server_handshake_traffic_secret[SECRET_LENGTH];
     process_server_handshake_traffic_secret(server_handshake_traffic_secret, shared_secret, hash);
     printf("server traffic secret: "); print_hex(server_handshake_traffic_secret, SECRET_LENGTH);
@@ -175,7 +178,7 @@ int main(){
         printf("processing cert\n");
         Array cert = process_certificate(certificate);
 
-        printf("cert: "); print_hex(cert.ptr, cert.length);
+        // printf("cert: "); print_hex(cert.ptr, cert.length);
 
         hs.body = cert.ptr;
         hs.length = cert.length;
@@ -278,7 +281,6 @@ int main(){
 
         printf("verify_data          : "); print_hex(hs.body, hs.length);
 
-        
 
         get_hash(&state, hash);
 
@@ -293,10 +295,26 @@ int main(){
         int equal = sodium_memcmp(check_client_verify_data, hs.body, HASH_LENGTH) == 0 ? 1 : 0;
 
         printf("equal? %d\n", equal);
+        assert(equal);
 
         free_handshake(hs);
         free_record(r);
     }
+
+    get_hash(&state, hash);
+
+    printf("goofy handshake_secret: "); print_hex(handshake_secret, sizeof(handshake_secret));
+    unsigned char master_secret[SECRET_LENGTH];
+    process_master_secret(master_secret, handshake_secret);
+
+    unsigned char client_application_traffic_secret_0[SECRET_LENGTH];
+    process_client_application_traffic_secret_0(client_application_traffic_secret_0, master_secret, hash);
+
+    unsigned char server_application_traffic_secret_0[SECRET_LENGTH];
+    process_server_application_traffic_secret_0(server_application_traffic_secret_0, master_secret, hash);
+
+    printf("client_application_traffic_secret_0: "); print_hex(client_application_traffic_secret_0, sizeof(client_application_traffic_secret_0));
+    printf("server_application_traffic_secret_0: "); print_hex(server_application_traffic_secret_0, sizeof(server_application_traffic_secret_0));
 
     sleep(5);
 

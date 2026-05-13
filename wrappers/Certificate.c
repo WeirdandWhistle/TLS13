@@ -28,7 +28,7 @@ Certificate create_certificate(char* file){
     cc.certs = malloc(sizeof(CertificateEntry) * cc.length);
     assert(cc.certs!=NULL);
     cc.certs[0] = ce;
-    printf("reading chain length! %d\n",cc.length);
+    // printf("reading chain length! %d\n",cc.length);
     c.certificate_list = cc;
     c.certificate_list_length = certificate_chain_length(cc) + 2;
     
@@ -92,7 +92,7 @@ int certificate_chain_length(CertificateChain cc){
 }
 Array process_certificate_entry(CertificateEntry ce){
     uint16_t ex_length = extensions_length(ce.extensions);
-    printf("ex_length: %d\n",ex_length);
+    // printf("ex_length: %d\n",ex_length);
     int len = 3 + ce.cert_data_length + 2 + ex_length;
 
     unsigned char* buf = malloc(len);
@@ -112,7 +112,7 @@ Array process_certificate_entry(CertificateEntry ce){
     iter += 2;
 
     if(ex_length != 0){
-        printf("adding cert extensions!\n");
+        // printf("adding cert extensions!\n");
         Array ex_arr = process_extensions(ce.extensions);
         memcpy(iter, ex_arr.ptr, ex_arr.length);
         free(ex_arr.ptr);

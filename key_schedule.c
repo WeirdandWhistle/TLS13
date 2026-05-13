@@ -38,6 +38,8 @@ void process_server_handshake_traffic_secret(unsigned char* out, unsigned char* 
     unsigned char handshake_secret[SECRET_LENGTH];
     process_handshake_secret(handshake_secret, shared_secret, derived_secret);
 
+    printf("working handshake_secret: "); print_hex(handshake_secret, sizeof(handshake_secret));
+
     HKDF_Expand_Label(out, handshake_secret, (unsigned char*)"s hs traffic", sizeof("s hs traffic")-1, transcipt_hash, HASH_LENGTH, SECRET_LENGTH);
 }
 void process_client_handshake_traffic_secret(unsigned char* out, unsigned char* shared_secret, unsigned char* transcipt_hash){
@@ -50,7 +52,7 @@ void process_client_handshake_traffic_secret(unsigned char* out, unsigned char* 
     HKDF_Expand_Label(out, handshake_secret, (unsigned char*)"c hs traffic", sizeof("c hs traffic")-1, transcipt_hash, HASH_LENGTH, SECRET_LENGTH);
 }
 void process_base_derived_secret(unsigned char* out){
-    const unsigned char ZERO[SECRET_LENGTH] = {0};
+    const unsigned char ZERO[HASH_LENGTH] = {0};
     for(int i = 0; i< (int)sizeof(ZERO);i++){
         assert(ZERO[i]==0);
     } 
@@ -65,7 +67,13 @@ void process_base_derived_secret(unsigned char* out){
     HKDF_Expand_Label(out, early_secret, (unsigned char*)"derived", sizeof("derived")-1, empty_hash, SECRET_LENGTH, SECRET_LENGTH);
 }
 void process_handshake_secret(unsigned char* out, unsigned char* shared_secret, unsigned char* derived_secret){
-    crypto_kdf_hkdf_sha256_extract(out, derived_secret, SECRET_LENGTH, shared_secret, SECRET_LENGTH);
+    if(derived_secret != NULL){
+        crypto_kdf_hkdf_sha256_extract(out, derived_secret, SECRET_LENGTH, shared_secret, SECRET_LENGTH);
+    } else {
+        unsigned char ds[SECRET_LENGTH];
+        process_base_derived_secret(ds);
+        crypto_kdf_hkdf_sha256_extract(out, ds, SECRET_LENGTH, shared_secret, SECRET_LENGTH);
+    }
 }
 void generate_nonce(unsigned char *out, unsigned char *iv, uint64_t counter){
     memset(out, 0, NONCE_LENGTH);
@@ -92,4 +100,24 @@ void generate_finished_key(unsigned char* out, unsigned char* base_key){
 }
 void process_verify_data(unsigned char* out, unsigned char* finished_key, unsigned char* transcipt_hash){
     crypto_auth_hmacsha256(out, transcipt_hash, HASH_LENGTH, finished_key);
+}
+void process_client_application_traffic_secret_0(unsigned char* out, unsigned char* secret, unsigned char* transcipt_hash){
+    HKDF_Expand_Label(out, secret, (unsigned char*)"c ap traffic", sizeof("c ap traffic")-1, transcipt_hash, HASH_LENGTH, SECRET_LENGTH);
+}
+void process_server_application_traffic_secret_0(unsigned char* out, unsigned char* secret, unsigned char* transcipt_hash){
+    HKDF_Expand_Label(out, secret, (unsigned char*)"s ap traffic", sizeof("s ap traffic")-1, transcipt_hash, HASH_LENGTH, SECRET_LENGTH);
+}
+void process_master_secret(unsigned char* out, unsigned char* handshake_secret){
+    unsigned char ZERO[HASH_LENGTH] = {0};
+    for(int i = 0; i< (int)sizeof(ZERO);i++){
+        assert(ZERO[i]==0);
+    }
+
+    unsigned char empty_hash[HASH_LENGTH];
+    crypto_hash_sha256(empty_hash, NULL, 0);
+
+    unsigned char temp_secret[SECRET_LENGTH];
+    HKDF_Expand_Label(temp_secret, handshake_secret, (unsigned char*)"derived", sizeof("derived")-1, empty_hash, sizeof(empty_hash), SECRET_LENGTH);
+
+    crypto_kdf_hkdf_sha256_extract(out, temp_secret, sizeof(temp_secret), ZERO, sizeof(ZERO));
 }
