@@ -316,7 +316,31 @@ int main(){
     printf("client_application_traffic_secret_0: "); print_hex(client_application_traffic_secret_0, sizeof(client_application_traffic_secret_0));
     printf("server_application_traffic_secret_0: "); print_hex(server_application_traffic_secret_0, sizeof(server_application_traffic_secret_0));
 
-    sleep(5);
+    client_nonce_counter = 0;
+    server_nonce_counter = 0;
+
+    generate_write_iv(client_write_iv, client_application_traffic_secret_0);
+    generate_write_key(client_write_key, client_application_traffic_secret_0);
+    generate_write_iv(server_write_iv, server_application_traffic_secret_0);
+    generate_write_key(server_write_key, server_application_traffic_secret_0);
+
+    
+    if(SEND_DUMB_MESSAGE){
+        generate_nonce(nonce, server_write_iv, server_nonce_counter);
+        server_nonce_counter++;
+
+        r.fragment = DUMB_MESSAGE;
+        r.length = sizeof(DUMB_MESSAGE);
+        r.type = APPLIACTION_TYPE;
+
+        r_arr = encrypt_record(r, server_write_key, nonce);
+
+        write(s, r_arr.ptr, r_arr.length);
+
+        free(r_arr.ptr);
+    }
+
+    sleep(3);
 
     return 0;
 }

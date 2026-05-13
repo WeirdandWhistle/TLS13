@@ -1,12 +1,14 @@
 #ifndef CONSTANTS
 #define CONSTANTS
 
+    #define SEND_DUMB_MESSAGE 1
+    #define DUMB_MESSAGE "Custom TLS1.3 STACK!!!\n"
     #define SOCKET_PORT 3000
     #define SOCKET_BACKLOG 5
     #define INDENT_PRODUCT 4
     #define INDENT_CHAR ' '
     #define PADDING_MIN 0 
-    #define PADDING_MAX 100
+    #define PADDING_MAX 0
     #define SEND_CERTIFICATE 1
     #define SEND_CHANGE_CIPHER_SPEC 1
     #define KEY_FILE "keys/ec_key.hex"
