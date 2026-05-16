@@ -195,3 +195,25 @@ void process_record_headers(unsigned char* out, TLSPlaintext record){
     write_uint16(out+3, record.length);
     printf("record headers: "); print_hex(out, 5);
 }
+char* get_record_name(uint16_t type){
+    switch (type)
+    {
+    case 0:
+        return "invalid";
+    case CHANGE_CIPHER_SPEC_TYPE:
+        return "change_cipher_spec";
+    case ALERT_TYPE:
+        return "alert";
+    case HANDSHAKE_TYPE:
+        return "handshake";
+    case APPLIACTION_TYPE:
+        return "application_data";    
+    default:
+        return "unknown";
+    }
+}
+void log_record_simple(TLSPlaintext record, int indent_level){
+    indent(indent_level); printf("Length %d\n", record.length);
+    indent(indent_level); printf("Type %s(%d)\n", get_record_name(record.type), record.type);
+    indent(indent_level); printf("Version 0x%02x%02x\n", record.legacy_record_version[0], record.legacy_record_version[1]);
+}

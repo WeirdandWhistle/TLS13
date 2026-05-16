@@ -70,7 +70,7 @@ int main(){
     Handshake send_hs = {0};
     send_hs.length = sh_arr.length;
     send_hs.body = sh_arr.ptr;
-    send_hs.msg_type = SERVER_HELLO_HEADER;
+    send_hs.msg_type = SERVER_HELLO_TYPE;
 
     Array hs_arr = process_handshake(send_hs);
 

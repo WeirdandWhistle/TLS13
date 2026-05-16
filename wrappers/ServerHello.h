@@ -12,5 +12,6 @@
         ExtensionArray ea
     );
     void free_server_hello(ServerHello sh);
+    void log_server_hello(ServerHello sh, int indent_level);
 
 #endif

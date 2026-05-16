@@ -184,7 +184,7 @@ void get_X25519_key_share(ExtensionArray ea, unsigned char* out){
 }
 void log_extensions(ExtensionArray ea, int indent_level){
     int id = indent_level;
-    indent(id); printf("extensions:\n");
+    indent(id); printf("Extensions:\n");
     id++;
     for(int i = 0; i<ea.length;i++){
         indent(id); printf("extension_type=%s(%d), length=%d\n",get_extension_name(ea.array[i].extension_type), ea.array[i].extension_type, ea.array[i].extension_data_length);

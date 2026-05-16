@@ -70,3 +70,16 @@ ServerHello create_server_hello(
 void free_server_hello(ServerHello sh){
     free_extensions(sh.extensions);
 }
+void log_server_hello(ServerHello sh, int indent_level){
+    int id = indent_level;
+    indent(id); printf("ServerHello:\n");
+    id++;
+    indent(id); printf("legacy_version=0x%02X%02X\n", sh.legacy_version[0], sh.legacy_version[1]);
+    indent(id); printf("Random\n");
+    indent(id+1); print_hex(sh.random, 32);
+    indent(id); printf("legacy_session_id_echo (len=%d)\n", sh.legacy_session_id_echo_length);
+    indent(id+1); print_hex(sh.legacy_session_id_echo, sh.legacy_session_id_echo_length);
+    indent(id); printf("Cipher_suite=0x%02X%02X\n", sh.cipher_suite[0], sh.cipher_suite[1]);
+    indent(id); printf("legacy_compression_method %d\n",sh.legacy_compression_method);
+    log_extensions(sh.extensions, id+1);
+}

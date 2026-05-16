@@ -14,8 +14,10 @@
 #include "socket_manager.h"
 #include "util.h"
 #include "constants.h"
+#include "alert_constants.h"
 #include "tls13_types.h"
 #include "key_schedule.h"
+#include "state_machine.h"
 #include "wrappers/record.h"
 #include "wrappers/ClientHello.h"
 #include "wrappers/handshake.h"
@@ -24,5 +26,6 @@
 #include "wrappers/EncryptedExtensions.h"
 #include "wrappers/Certificate.h"
 #include "wrappers/CertificateVerify.h"
+#include "wrappers/Alert.h"
 
 #endif
