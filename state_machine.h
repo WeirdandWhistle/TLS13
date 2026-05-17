@@ -26,7 +26,10 @@
         unsigned long long client_nonce_counter;
     } TLS_SERVER_STATE;
 
-    void free_TLS_SERVER_STATE(TLS_SERVER_STATE s);
-    int main_state_mech(TLS_SERVER_STATE state, TLSPlaintext record, int logging);
+    void free_TLS_SERVER_STATE(TLS_SERVER_STATE* s);
+    int main_state_mech(TLS_SERVER_STATE* state, TLSPlaintext record, int logging);
+    int ClientHello_ServerHello_handshake(TLS_SERVER_STATE* state, ClientHello client_hello, int logging, int indent_level);
+    int send_null_EncryptedExtensions(TLS_SERVER_STATE* state, int logging, int indent_level);
+    int init_TLS_SERVER_STATE(TLS_SERVER_STATE* s);
 
 #endif

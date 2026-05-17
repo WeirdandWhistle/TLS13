@@ -1,4 +1,3 @@
-#include "main.h"
 char* get_alert_name(int type){
         switch(type){
             case 0:

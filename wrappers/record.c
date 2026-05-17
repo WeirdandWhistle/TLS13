@@ -126,32 +126,25 @@ Array encrypt_record(TLSPlaintext record, unsigned char* key, unsigned char* non
     arr.length = len;
     return arr;
 }
-TLSPlaintext decrypt_record(int socket, unsigned char* key, unsigned char* nonce){
-    TLSPlaintext er = read_record(socket);
-
-    if(er.type != APPLIACTION_TYPE){
-        assert(0 && "record has to be appliction type");
-    }
-    if(er.legacy_record_version[0] != 0x03 || er.legacy_record_version[1] != 0x03){
-        assert(0 && "record must be version TLS 1.2 (0x0303)");
-    }
-    assert(er.fragment!=NULL);
-
+int decrypt_record(TLSPlaintext* out, TLSPlaintext record, unsigned char* key, unsigned char* nonce){
     unsigned char additional_data[5];
-    process_record_headers(additional_data, er);
+    process_record_headers(additional_data, record);
 
-    unsigned char* buf = malloc(er.length - AEAD_TAG_LENGTH + 100);
+    unsigned char* buf = malloc(record.length - AEAD_TAG_LENGTH + 100);
     unsigned long long buf_len = 0;
-    assert(buf!=NULL);
+    if(buf==NULL)
+        return -1;
 
     int rc = crypto_aead_chacha20poly1305_ietf_decrypt(buf, &buf_len,
                                             NULL,
-                                            er.fragment, er.length,
+                                            record.fragment, record.length,
                                             additional_data, sizeof(additional_data),
                                             nonce, key);
 
-    assert(rc==0);
-    assert((int) buf_len==er.length-AEAD_TAG_LENGTH);
+    if(rc!=0)
+        return -2;
+    if((int) buf_len!=record.length-AEAD_TAG_LENGTH)
+        return -3;
 
     int padding_offset = 0;
     unsigned char* iter = buf;
@@ -166,26 +159,27 @@ TLSPlaintext decrypt_record(int socket, unsigned char* key, unsigned char* nonce
     // printf("content_type: %02x\n",content_type);
     // printf("content: "); print_hex(buf, buf_len - 1 - padding_offset);
 
-    TLSPlaintext dr = {0};
-    dr.type = content_type;
-    dr.legacy_record_version = malloc(2);
-    assert(dr.legacy_record_version!=NULL);
-    dr.legacy_record_version[0] = er.legacy_record_version[0];
-    dr.legacy_record_version[1] = er.legacy_record_version[1];
+    // TLSPlaintext out = {0};
+    out->type = content_type;
+    out->legacy_record_version = malloc(2);
+    if(out->legacy_record_version==NULL)
+        return -4;
+    out->legacy_record_version[0] = record.legacy_record_version[0];
+    out->legacy_record_version[1] = record.legacy_record_version[1];
     
     int out_len = buf_len - 1 - padding_offset;
-    unsigned char* out = malloc(out_len);
-    assert(out!=NULL);
+    unsigned char* buf2 = malloc(out_len);
+    if(out==NULL)
+        return -5;
 
     memcpy(out, buf, out_len);
     
     free(buf);
-    free_record(er);
 
-    dr.length = out_len;
-    dr.fragment = out;
+    out->length = out_len;
+    out->fragment = buf2;
 
-    return dr;
+    return 0;
 }
 void process_record_headers(unsigned char* out, TLSPlaintext record){
     out[0] = record.type;

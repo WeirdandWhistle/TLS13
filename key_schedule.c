@@ -38,7 +38,7 @@ void process_server_handshake_traffic_secret(unsigned char* out, unsigned char* 
     unsigned char handshake_secret[SECRET_LENGTH];
     process_handshake_secret(handshake_secret, shared_secret, derived_secret);
 
-    printf("working handshake_secret: "); print_hex(handshake_secret, sizeof(handshake_secret));
+    // printf("working handshake_secret: "); print_hex(handshake_secret, sizeof(handshake_secret));
 
     HKDF_Expand_Label(out, handshake_secret, (unsigned char*)"s hs traffic", sizeof("s hs traffic")-1, transcipt_hash, HASH_LENGTH, SECRET_LENGTH);
 }

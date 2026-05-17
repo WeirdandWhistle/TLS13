@@ -144,9 +144,7 @@ Extension* get_extension(ExtensionArray ea, uint16_t type){
     return NULL;
 }
 void get_X25519_key_share(ExtensionArray ea, unsigned char* out){
-    assert(out!=NULL);
     Extension* ex_ptr = get_extension(ea, KEY_SHARE_EXTENSION_TYPE);
-    assert(ex_ptr!=NULL);
     Extension ex = *ex_ptr;
 
     unsigned char* iter = ex.extension_data;
