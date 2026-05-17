@@ -1,30 +1,50 @@
 #include "../main.h"
 #include <time.h>
 
-TLSPlaintext read_record(int socket){
-    TLSPlaintext record = {0};
-    int rc = read(socket, &record.type, 1);
-    assert(rc==1);
-    record.legacy_record_version = malloc(2);
-    assert(record.legacy_record_version!=NULL);
-    rc = read(socket, record.legacy_record_version, 2);
-    // printf("2. rc=%d; errno:%s\n",rc,strerror(errno));
-    assert(rc==2);
-    rc = read(socket, &record.length, 2);
-    assert(rc==2);
-    record.length = ntohs(record.length);
+int read_record(TLSPlaintext* record, int socket){
+    int rc = read(socket, &record->type, 1);
+    if(rc!=1)
+        return -1;
+    record->legacy_record_version = malloc(2);
+    if(record->legacy_record_version==NULL)
+        return -2;
+    rc = read(socket, record->legacy_record_version, 2);
+    if(rc!=2)
+        return -3;
+    rc = read(socket, &record->length, 2);
+    if(rc!=2)
+        return -4;
+    record->length = ntohs(record->length);
 
-    unsigned char* buf = malloc(record.length);
-    assert(buf!=NULL);
+    unsigned char* buf = malloc(record->length);
+    if(buf==NULL)
+        return -5;
 
-    rc = read(socket, buf, record.length);
-    if(rc!=record.length){
-        printf("buffer over/under-flow. aborting record read.\n");
-        assert(0);
+    rc = read(socket, buf, record->length);
+    if(rc!=record->length){
+        return -6;
     }
 
-    record.fragment = buf;
-    return record;
+    record->fragment = buf;
+    return 0;
+}
+char* get_record_read_error_str(int rc){
+    switch (rc){
+    case -1:
+        return "COULD NOT READ FULL TYPE or END OF FILE ERROR";
+    case -2:
+        return "MALLOC RETURNED NULL";
+    case -3:
+        return "COULD NOT READ FULL VERSION or END OF FILE ERROR";
+    case -4:
+        return "COULD NOT READ FULL LENGTH or END OF FILE ERROR";
+    case -5:
+        return "MALLOC RETURNED NULL FOR MAIN BUFFER";
+    case -6:
+        return "COULD NOT READ FULL FRAGMENT or END OF FILE ERROR [probaly a buffer overflow attack]";      
+    default:
+        return "unknown";
+    }
 }
 void free_record(TLSPlaintext record){
     free(record.fragment);

@@ -2,7 +2,8 @@
 #ifndef  TLS_13_RECORD
 #define  TLS_13_RECORD
 
-    TLSPlaintext read_record(int socket);
+    int read_record(TLSPlaintext* record, int socket);
+    char* get_record_read_error_str(int rc);
     void free_record(TLSPlaintext record);
     Array process_record(TLSPlaintext record);
     Array encrypt_record(TLSPlaintext record, unsigned char* key, unsigned char* nonce);

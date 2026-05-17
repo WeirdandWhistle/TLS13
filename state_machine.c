@@ -56,6 +56,7 @@ int main_state_mech(TLS_SERVER_STATE* state, TLSPlaintext record, int logging){
 
     switch (record.type){
     case HANDSHAKE_TYPE:
+        // this prefroms the entire handshake until verifying peer's finished message/cert but wont matter becuase this implmentation DOES NOT SUPPORT PEER certs
         Handshake handshake = parse_handshake(record.fragment, record.length);
 
         if(handshake.msg_type != CLIENT_HELLO_TYPE){

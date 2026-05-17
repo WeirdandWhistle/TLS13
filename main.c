@@ -24,8 +24,15 @@ int main(){
     init_TLS_SERVER_STATE(&state);
 
     while(1){
-        TLSPlaintext r = read_record(state.socket);
-        int rc = main_state_mech(&state, r, LOGGING);
+        TLSPlaintext r = {0};
+        int rc = read_record(&r, state.socket);
+        if(rc!=0){
+            if(LOGGING)
+                printf("\n----- RECORD READ ERROR! %s (%d) [errno=%s]-----\n", get_record_read_error_str(rc), rc, strerror(errno));
+            break;
+        }
+        rc = main_state_mech(&state, r, LOGGING);
+        free_record(r);
         if(rc!=0)
             break;
     }
