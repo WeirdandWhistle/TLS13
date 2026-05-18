@@ -11,7 +11,7 @@ void free_TLS_SERVER_STATE(TLS_SERVER_STATE* s){
     free(s->client_write_key);
     free(s->server_write_iv);
     free(s->client_write_iv);
-    
+    free(s->certificate_key);
 }
 int init_TLS_SERVER_STATE(TLS_SERVER_STATE* s){
     s->handshake_secret = malloc(SECRET_LENGTH);
@@ -25,6 +25,7 @@ int init_TLS_SERVER_STATE(TLS_SERVER_STATE* s){
     s->client_write_key = malloc(SECRET_LENGTH);
     s->server_write_iv = malloc(NONCE_LENGTH);
     s->client_write_iv = malloc(NONCE_LENGTH);
+    s->certificate_key = malloc(SECRET_LENGTH);
 
     s->cipher_suite = TLS_CHACHA20_POLY1305_SHA256_NUM;
     crypto_hash_sha256_init(&s->hash_state);

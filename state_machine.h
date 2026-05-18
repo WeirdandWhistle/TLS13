@@ -24,6 +24,8 @@
         unsigned char* client_write_iv;
         unsigned long long server_nonce_counter;
         unsigned long long client_nonce_counter;
+        Certificate certificate;
+        unsigned char* certificate_key;
     } TLS_SERVER_STATE;
 
     void free_TLS_SERVER_STATE(TLS_SERVER_STATE* s);
